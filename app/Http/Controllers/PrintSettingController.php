@@ -21,9 +21,10 @@ class PrintSettingController extends Controller
                 'id' => $template?->id,
                 'nama_template' => $template?->nama_template ?? 'SPJ BBM Kendaraan Dinas',
                 'google_docs_url' => $template?->google_docs_url ?? '',
-                'google_drive_folder_url' => $template?->google_drive_folder_url ?? '',
                 'template_content' => $template?->template_content ?? '',
-                'keterangan' => $template?->keterangan ?? 'Gunakan placeholder dengan format {{data}} agar bisa diisi otomatis saat generate SPJ.',
+                'google_last_synced_at' => $template?->google_last_synced_at?->toDateTimeString(),
+                'google_last_error' => $template?->google_last_error ?? '',
+                'keterangan' => $template?->keterangan ?? 'Gunakan placeholder dengan format {{data}} agar isi SPJ otomatis terisi.',
                 'placeholders' => [
                     '{{tanggal}}',
                     '{{nama_pegawai}}',
@@ -38,6 +39,7 @@ class PrintSettingController extends Controller
                     '{{liter}}',
                     '{{harga_per_liter}}',
                     '{{total}}',
+                    '{{terbilang}}',
                     '{{spbu}}',
                     '{{nomor_nota}}',
                     '{{odometer}}',
@@ -48,8 +50,10 @@ class PrintSettingController extends Controller
                 ],
             ],
             'googleDocsSetup' => [
-                'service_account_configured' => filled(config('services.google_docs.service_account_json_path')),
-                'impersonated_user' => config('services.google_docs.impersonated_user'),
+                'auth_mode' => app(GoogleDocsSpjService::class)->authMode(),
+                'oauth_configured' => filled(config('services.google_docs.client_id'))
+                    && filled(config('services.google_docs.client_secret'))
+                    && filled(config('services.google_docs.refresh_token')),
             ],
         ]);
     }

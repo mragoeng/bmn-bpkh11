@@ -111,17 +111,17 @@
         <tr>
             <td class="label">NIP</td>
             <td class="separator">:</td>
-            <td>{{ collect($placeholders)->firstWhere('key', '{{nip}}')['value'] ?? '-' }}</td>
+            <td>{{ $placeholderMap['nip'] ?? '-' }}</td>
         </tr>
         <tr>
             <td class="label">Jabatan</td>
             <td class="separator">:</td>
-            <td>{{ collect($placeholders)->firstWhere('key', '{{jabatan}}')['value'] ?? '-' }}</td>
+            <td>{{ $placeholderMap['jabatan'] ?? '-' }}</td>
         </tr>
         <tr>
             <td class="label">Unit</td>
             <td class="separator">:</td>
-            <td>{{ collect($placeholders)->firstWhere('key', '{{unit}}')['value'] ?? '-' }}</td>
+            <td>{{ $placeholderMap['unit'] ?? '-' }}</td>
         </tr>
         <tr>
             <td class="label">Kendaraan</td>
@@ -131,17 +131,17 @@
         <tr>
             <td class="label">Jenis BBM</td>
             <td class="separator">:</td>
-            <td>{{ collect($placeholders)->firstWhere('key', '{{jenis_bbm}}')['value'] ?? '-' }}</td>
+            <td>{{ $placeholderMap['jenis_bbm'] ?? '-' }}</td>
         </tr>
         <tr>
             <td class="label">Liter</td>
             <td class="separator">:</td>
-            <td>{{ collect($placeholders)->firstWhere('key', '{{liter}}')['value'] ?? '-' }}</td>
+            <td>{{ $placeholderMap['liter'] ?? '-' }}</td>
         </tr>
         <tr>
             <td class="label">Harga per Liter</td>
             <td class="separator">:</td>
-            <td>{{ collect($placeholders)->firstWhere('key', '{{harga_per_liter}}')['value'] ?? '-' }}</td>
+            <td>{{ $placeholderMap['harga_per_liter'] ?? '-' }}</td>
         </tr>
         <tr>
             <td class="label"><strong>Total</strong></td>
@@ -151,17 +151,17 @@
         <tr>
             <td class="label">Terbilang</td>
             <td class="separator">:</td>
-            <td>{{ collect($placeholders)->firstWhere('key', '{{terbilang}}')['value'] ?? '-' }}</td>
+            <td>{{ $placeholderMap['terbilang'] ?? '-' }}</td>
         </tr>
         <tr>
             <td class="label">SPBU</td>
             <td class="separator">:</td>
-            <td>{{ collect($placeholders)->firstWhere('key', '{{spbu}}')['value'] ?? '-' }}</td>
+            <td>{{ $placeholderMap['spbu'] ?? '-' }}</td>
         </tr>
         <tr>
             <td class="label">Nomor Nota</td>
             <td class="separator">:</td>
-            <td>{{ collect($placeholders)->firstWhere('key', '{{nomor_nota}}')['value'] ?? '-' }}</td>
+            <td>{{ $placeholderMap['nomor_nota'] ?? '-' }}</td>
         </tr>
     </table>
 
@@ -182,7 +182,7 @@
                     Yogyakarta, {{ $transaction['tanggal'] }}<br>
                     Yang membuat pertanggungjawaban
                     <div class="nama">{{ $transaction['pegawai'] }}</div>
-                    <div class="nip">NIP. {{ collect($placeholders)->firstWhere('key', '{{nip}}')['value'] ?? '' }}</div>
+                    <div class="nip">NIP. {{ $placeholderMap['nip'] ?? '' }}</div>
                 </td>
             </tr>
         </table>

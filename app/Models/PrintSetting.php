@@ -14,8 +14,13 @@ class PrintSetting extends Model
     protected $fillable = [
         'nama_template',
         'google_docs_url',
-        'google_drive_folder_url',
         'template_content',
+        'google_last_synced_at',
+        'google_last_error',
         'keterangan',
+    ];
+
+    protected $casts = [
+        'google_last_synced_at' => 'datetime',
     ];
 }

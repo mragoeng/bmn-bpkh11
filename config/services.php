@@ -38,6 +38,9 @@ return [
     'google_docs' => [
         'service_account_json_path' => env('GOOGLE_SERVICE_ACCOUNT_JSON_PATH'),
         'impersonated_user' => env('GOOGLE_IMPERSONATED_USER'),
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        'refresh_token' => env('GOOGLE_REFRESH_TOKEN'),
     ],
 
     'turnstile' => [

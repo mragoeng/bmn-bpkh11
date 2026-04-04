@@ -146,8 +146,8 @@ export default function PencatatanBbm({
             title={isEditMode ? 'Edit Pencatatan BBM' : 'Pencatatan BBM'}
             description={
                 isEditMode
-                    ? 'Perbarui transaksi BBM yang sudah tercatat agar arsip dan data SPJ tetap sesuai.'
-                    : 'Form transaksi BBM untuk arsip pengisian bahan bakar kendaraan dinas dan persiapan data SPJ.'
+                    ? 'Perbarui data transaksi lalu simpan. SPJ PDF akan menyesuaikan otomatis dari data terbaru.'
+                    : 'Isi transaksi BBM dengan alur singkat agar mudah dipakai oleh pengguna awam.'
             }
             actions={
                 <>
@@ -182,208 +182,229 @@ export default function PencatatanBbm({
                 <form
                     id="pencatatan-bbm-form"
                     onSubmit={submit}
-                    className="rounded-[28px] border border-stone-200 bg-stone-50 p-6"
+                    className="space-y-6"
                 >
-                    <div className="grid gap-5 md:grid-cols-2">
-                        <Field label="Tanggal">
-                            <>
-                                <Input
-                                    type="date"
-                                    value={form.data.tanggal}
-                                    onChange={(event) =>
-                                        handleTanggalChange(event.target.value)
-                                    }
-                                />
-                                <InputError
-                                    className="mt-2"
-                                    message={form.errors.tanggal}
-                                />
-                            </>
-                        </Field>
-                        <Field label="Pegawai">
-                            <>
-                                <Select
-                                    value={form.data.pegawai_id}
-                                    onChange={(event) =>
-                                        form.setData(
-                                            'pegawai_id',
-                                            event.target.value,
-                                        )
-                                    }
-                                >
-                                    <option value="">Pilih pegawai</option>
-                                    {pegawaiOptions.map((item) => (
-                                        <option key={item.id} value={item.id}>
-                                            {item.nama}
-                                        </option>
-                                    ))}
-                                </Select>
-                                <InputError
-                                    className="mt-2"
-                                    message={form.errors.pegawai_id}
-                                />
-                            </>
-                        </Field>
-                        <Field label="Kendaraan">
-                            <>
-                                <Select
-                                    value={form.data.kendaraan_id}
-                                    onChange={(event) =>
-                                        handleKendaraanChange(
-                                            event.target.value,
-                                        )
-                                    }
-                                >
-                                    <option value="">Pilih kendaraan</option>
-                                    {kendaraanOptions.map((item) => (
-                                        <option key={item.id} value={item.id}>
-                                            {item.nomor_polisi} -{' '}
-                                            {item.merk_tipe}
-                                        </option>
-                                    ))}
-                                </Select>
-                                <InputError
-                                    className="mt-2"
-                                    message={form.errors.kendaraan_id}
-                                />
-                            </>
-                        </Field>
-                        <Field label="Jenis BBM">
-                            <>
-                                <Input
-                                    type="text"
-                                    value={form.data.jenis_bbm}
-                                    onChange={(event) =>
-                                        form.setData(
-                                            'jenis_bbm',
-                                            event.target.value,
-                                        )
-                                    }
-                                />
-                                <InputError
-                                    className="mt-2"
-                                    message={form.errors.jenis_bbm}
-                                />
-                            </>
-                        </Field>
-                        <Field label="Odometer">
-                            <>
-                                <Input
-                                    type="number"
-                                    placeholder="Contoh: 15420"
-                                    value={form.data.odometer}
-                                    onChange={(event) =>
-                                        form.setData(
-                                            'odometer',
-                                            event.target.value,
-                                        )
-                                    }
-                                />
-                                <InputError
-                                    className="mt-2"
-                                    message={form.errors.odometer}
-                                />
-                            </>
-                        </Field>
-                        <Field label="Liter">
-                            <>
-                                <Input
-                                    type="number"
-                                    step="0.01"
-                                    placeholder="Contoh: 24"
-                                    value={form.data.liter}
-                                    onChange={(event) =>
-                                        form.setData('liter', event.target.value)
-                                    }
-                                />
-                                <InputError
-                                    className="mt-2"
-                                    message={form.errors.liter}
-                                />
-                            </>
-                        </Field>
-                        <Field label="Harga per Liter">
-                            <>
-                                <Input
-                                    type="number"
-                                    step="0.01"
-                                    placeholder="Contoh: 10000"
-                                    value={form.data.harga_per_liter}
-                                    onChange={(event) =>
-                                        form.setData(
-                                            'harga_per_liter',
-                                            event.target.value,
-                                        )
-                                    }
-                                />
-                                <InputError
-                                    className="mt-2"
-                                    message={form.errors.harga_per_liter}
-                                />
-                            </>
-                        </Field>
-                        <Field label="Total">
-                            <Input
-                                type="text"
-                                value={`Rp ${formattedTotal}`}
-                                readOnly
-                            />
-                        </Field>
-                        <Field label="SPBU">
-                            <>
-                                <Input
-                                    type="text"
-                                    placeholder="Nama SPBU"
-                                    value={form.data.spbu}
-                                    onChange={(event) =>
-                                        form.setData('spbu', event.target.value)
-                                    }
-                                />
-                                <InputError
-                                    className="mt-2"
-                                    message={form.errors.spbu}
-                                />
-                            </>
-                        </Field>
-                        <Field label="Nomor Nota">
-                            <>
+                    <div className="rounded-[28px] border border-stone-200 bg-stone-50 p-6">
+                        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-stone-400">
+                            Data Dasar
+                        </p>
+                        <div className="mt-5 grid gap-5 md:grid-cols-2">
+                            <Field label="Tanggal">
+                                <>
+                                    <Input
+                                        type="date"
+                                        value={form.data.tanggal}
+                                        onChange={(event) =>
+                                            handleTanggalChange(event.target.value)
+                                        }
+                                    />
+                                    <InputError
+                                        className="mt-2"
+                                        message={form.errors.tanggal}
+                                    />
+                                </>
+                            </Field>
+                            <Field label="Pegawai">
+                                <>
+                                    <Select
+                                        value={form.data.pegawai_id}
+                                        onChange={(event) =>
+                                            form.setData(
+                                                'pegawai_id',
+                                                event.target.value,
+                                            )
+                                        }
+                                    >
+                                        <option value="">Pilih pegawai</option>
+                                        {pegawaiOptions.map((item) => (
+                                            <option key={item.id} value={item.id}>
+                                                {item.nama}
+                                            </option>
+                                        ))}
+                                    </Select>
+                                    <InputError
+                                        className="mt-2"
+                                        message={form.errors.pegawai_id}
+                                    />
+                                </>
+                            </Field>
+                            <Field label="Kendaraan">
+                                <>
+                                    <Select
+                                        value={form.data.kendaraan_id}
+                                        onChange={(event) =>
+                                            handleKendaraanChange(
+                                                event.target.value,
+                                            )
+                                        }
+                                    >
+                                        <option value="">Pilih kendaraan</option>
+                                        {kendaraanOptions.map((item) => (
+                                            <option key={item.id} value={item.id}>
+                                                {item.nomor_polisi} - {item.merk_tipe}
+                                            </option>
+                                        ))}
+                                    </Select>
+                                    <InputError
+                                        className="mt-2"
+                                        message={form.errors.kendaraan_id}
+                                    />
+                                </>
+                            </Field>
+                            <Field label="Jenis BBM">
+                                <>
+                                    <Input
+                                        type="text"
+                                        placeholder="Contoh: Pertalite"
+                                        value={form.data.jenis_bbm}
+                                        onChange={(event) =>
+                                            form.setData(
+                                                'jenis_bbm',
+                                                event.target.value,
+                                            )
+                                        }
+                                    />
+                                    <InputError
+                                        className="mt-2"
+                                        message={form.errors.jenis_bbm}
+                                    />
+                                </>
+                            </Field>
+                        </div>
+                    </div>
+
+                    <div className="rounded-[28px] border border-stone-200 bg-stone-50 p-6">
+                        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-stone-400">
+                            Detail Pembelian
+                        </p>
+                        <div className="mt-5 grid gap-5 md:grid-cols-2">
+                            <Field label="Odometer">
+                                <>
+                                    <Input
+                                        type="number"
+                                        placeholder="Contoh: 15420"
+                                        value={form.data.odometer}
+                                        onChange={(event) =>
+                                            form.setData(
+                                                'odometer',
+                                                event.target.value,
+                                            )
+                                        }
+                                    />
+                                    <InputError
+                                        className="mt-2"
+                                        message={form.errors.odometer}
+                                    />
+                                </>
+                            </Field>
+                            <Field label="Liter">
+                                <>
+                                    <Input
+                                        type="number"
+                                        step="0.01"
+                                        placeholder="Contoh: 24"
+                                        value={form.data.liter}
+                                        onChange={(event) =>
+                                            form.setData('liter', event.target.value)
+                                        }
+                                    />
+                                    <InputError
+                                        className="mt-2"
+                                        message={form.errors.liter}
+                                    />
+                                </>
+                            </Field>
+                            <Field label="Harga per Liter">
+                                <>
+                                    <Input
+                                        type="number"
+                                        step="0.01"
+                                        placeholder="Contoh: 10000"
+                                        value={form.data.harga_per_liter}
+                                        onChange={(event) =>
+                                            form.setData(
+                                                'harga_per_liter',
+                                                event.target.value,
+                                            )
+                                        }
+                                    />
+                                    <InputError
+                                        className="mt-2"
+                                        message={form.errors.harga_per_liter}
+                                    />
+                                </>
+                            </Field>
+                            <Field label="Total">
                                 <Input
                                     type="text"
-                                    placeholder="Nomor nota"
-                                    value={form.data.nomor_nota}
-                                    onChange={(event) =>
-                                        form.setData(
-                                            'nomor_nota',
-                                            event.target.value,
-                                        )
-                                    }
+                                    value={`Rp ${formattedTotal}`}
+                                    readOnly
                                 />
-                                <InputError
-                                    className="mt-2"
-                                    message={form.errors.nomor_nota}
-                                />
-                            </>
-                        </Field>
-                        <Field label="Catatan">
-                            <>
-                                <textarea
-                                    rows="4"
-                                    className="w-full rounded-2xl border border-stone-300 px-4 py-3 text-sm"
-                                    placeholder="Catatan tambahan"
-                                    value={form.data.catatan}
-                                    onChange={(event) =>
-                                        form.setData(
-                                            'catatan',
-                                            event.target.value,
-                                        )
-                                    }
-                                />
-                                <InputError
-                                    className="mt-2"
-                                    message={form.errors.catatan}
-                                />
-                            </>
-                        </Field>
+                            </Field>
+                            <Field label="SPBU">
+                                <>
+                                    <Input
+                                        type="text"
+                                        placeholder="Nama SPBU"
+                                        value={form.data.spbu}
+                                        onChange={(event) =>
+                                            form.setData('spbu', event.target.value)
+                                        }
+                                    />
+                                    <InputError
+                                        className="mt-2"
+                                        message={form.errors.spbu}
+                                    />
+                                </>
+                            </Field>
+                            <Field label="Nomor Nota">
+                                <>
+                                    <Input
+                                        type="text"
+                                        placeholder="Nomor nota"
+                                        value={form.data.nomor_nota}
+                                        onChange={(event) =>
+                                            form.setData(
+                                                'nomor_nota',
+                                                event.target.value,
+                                            )
+                                        }
+                                    />
+                                    <InputError
+                                        className="mt-2"
+                                        message={form.errors.nomor_nota}
+                                    />
+                                </>
+                            </Field>
+                        </div>
+                    </div>
+
+                    <div className="rounded-[28px] border border-stone-200 bg-stone-50 p-6">
+                        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-stone-400">
+                            Catatan Tambahan
+                        </p>
+                        <div className="mt-5">
+                            <Field label="Catatan">
+                                <>
+                                    <textarea
+                                        rows="4"
+                                        className="w-full rounded-2xl border border-stone-300 px-4 py-3 text-sm"
+                                        placeholder="Catatan tambahan bila perlu"
+                                        value={form.data.catatan}
+                                        onChange={(event) =>
+                                            form.setData(
+                                                'catatan',
+                                                event.target.value,
+                                            )
+                                        }
+                                    />
+                                    <InputError
+                                        className="mt-2"
+                                        message={form.errors.catatan}
+                                    />
+                                </>
+                            </Field>
+                        </div>
                     </div>
                 </form>
 
@@ -432,9 +453,9 @@ export default function PencatatanBbm({
                                 </>
                             </Field>
                             <div className="rounded-2xl bg-amber-50 p-4 text-sm leading-6 text-amber-900">
-                                Sistem nanti akan menyesuaikan akun pembayaran
-                                otomatis berdasarkan tahun transaksi dan jenis
-                                kendaraan.
+                                Akun pembayaran akan dipilih otomatis sesuai
+                                tahun transaksi dan jenis kendaraan. Jika perlu,
+                                Anda tetap bisa menggantinya manual.
                             </div>
                         </div>
                     </div>
@@ -444,31 +465,37 @@ export default function PencatatanBbm({
                             Ringkasan
                         </p>
                         <dl className="mt-4 space-y-3 text-sm">
-                            <div className="flex items-center justify-between">
+                            <div className="flex items-center justify-between gap-4">
                                 <dt>Pegawai</dt>
-                                <dd>{selectedPegawai?.nama || 'Belum dipilih'}</dd>
+                                <dd className="text-right">
+                                    {selectedPegawai?.nama || 'Belum dipilih'}
+                                </dd>
                             </div>
-                            <div className="flex items-center justify-between">
+                            <div className="flex items-center justify-between gap-4">
                                 <dt>Kendaraan</dt>
-                                <dd>
+                                <dd className="text-right">
                                     {selectedKendaraan
-                                        ? `${selectedKendaraan.nomor_polisi}`
+                                        ? selectedKendaraan.nomor_polisi
                                         : 'Belum dipilih'}
                                 </dd>
                             </div>
-                            <div className="flex items-center justify-between">
+                            <div className="flex items-center justify-between gap-4">
                                 <dt>Akun SPJ</dt>
                                 <dd className="text-right">
                                     {selectedAkun?.kode_akun || 'Belum tersedia'}
                                 </dd>
                             </div>
-                            <div className="flex items-center justify-between">
+                            <div className="flex items-center justify-between gap-4">
                                 <dt>Total Biaya</dt>
-                                <dd className="font-semibold">
+                                <dd className="text-right font-semibold">
                                     Rp {formattedTotal}
                                 </dd>
                             </div>
                         </dl>
+                        <div className="mt-5 rounded-2xl border border-white/10 bg-white/5 p-4 text-sm leading-6 text-stone-300">
+                            Setelah disimpan, transaksi ini bisa langsung
+                            dicetak ke PDF dari halaman riwayat tanpa preview.
+                        </div>
                     </div>
                 </div>
             </div>

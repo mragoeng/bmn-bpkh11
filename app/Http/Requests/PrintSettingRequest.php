@@ -16,7 +16,6 @@ class PrintSettingRequest extends FormRequest
         return [
             'nama_template' => ['required', 'string', 'max:255'],
             'google_docs_url' => ['nullable', 'url', 'max:2000'],
-            'google_drive_folder_url' => ['nullable', 'url', 'max:2000'],
             'template_content' => ['nullable', 'string'],
             'keterangan' => ['nullable', 'string'],
         ];

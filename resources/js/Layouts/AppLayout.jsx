@@ -121,9 +121,53 @@ export default function AppLayout({ title, description, actions, children }) {
 
     return (
         <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(251,191,36,0.22),_transparent_28%),linear-gradient(180deg,#f7f3ec_0%,#f3efe6_100%)] text-stone-900">
-            <div className="flex min-h-screen w-full gap-6 px-4 py-4 sm:px-6 lg:px-8 2xl:px-10">
+            {sidebarOpen ? (
+                <>
+                    <button
+                        type="button"
+                        aria-label="Tutup menu"
+                        onClick={() => setSidebarOpen(false)}
+                        className="fixed inset-0 z-40 bg-stone-950/35 xl:hidden"
+                    />
+                    <div className="fixed inset-y-3 left-3 right-3 z-50 flex flex-col rounded-[28px] border border-white/70 bg-white/95 p-5 shadow-[0_25px_80px_-35px_rgba(41,37,36,0.45)] backdrop-blur xl:hidden">
+                        <div className="mb-6 flex items-center justify-between">
+                            <div>
+                                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-amber-700">
+                                    BMN-BPKH11
+                                </p>
+                                <p className="mt-2 text-sm text-stone-600">
+                                    Menu aplikasi
+                                </p>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setSidebarOpen(false)}
+                                className="rounded-2xl border border-stone-300 px-4 py-2 text-sm font-medium text-stone-700"
+                            >
+                                Tutup
+                            </button>
+                        </div>
+
+                        <nav className="flex-1 space-y-5 overflow-y-auto pr-1">
+                            {navigationSections.map((section) => (
+                                <div key={section.key}>
+                                    <NavigationSection
+                                        section={section}
+                                        url={url}
+                                        openSections={openSections}
+                                        toggleSection={toggleSection}
+                                        onNavigate={() => setSidebarOpen(false)}
+                                    />
+                                </div>
+                            ))}
+                        </nav>
+                    </div>
+                </>
+            ) : null}
+
+            <div className="flex min-h-screen w-full gap-6 px-3 py-3 sm:px-5 sm:py-5 lg:px-8 2xl:px-10">
                 <aside className="hidden w-72 shrink-0 xl:block">
-                    <div className="sticky top-4 rounded-[28px] border border-white/60 bg-white/80 p-6 shadow-[0_25px_80px_-35px_rgba(41,37,36,0.35)] backdrop-blur">
+                    <div className="sticky top-4 flex max-h-[calc(100vh-2rem)] flex-col overflow-hidden rounded-[28px] border border-white/60 bg-white/80 p-6 shadow-[0_25px_80px_-35px_rgba(41,37,36,0.35)] backdrop-blur">
                         <div className="mb-8">
                             <p className="text-xs font-semibold uppercase tracking-[0.3em] text-amber-700">
                                 BMN-BPKH11
@@ -137,7 +181,7 @@ export default function AppLayout({ title, description, actions, children }) {
                             </p>
                         </div>
 
-                        <nav className="space-y-6">
+                        <nav className="flex-1 space-y-6 overflow-y-auto pr-1">
                             {navigationSections.map((section) => (
                                 <NavigationSection
                                     key={section.key}
@@ -152,7 +196,7 @@ export default function AppLayout({ title, description, actions, children }) {
                 </aside>
 
                 <div className="flex-1">
-                    <div className="mb-4 flex items-center justify-between rounded-[28px] border border-white/60 bg-white/80 px-5 py-4 shadow-[0_25px_80px_-35px_rgba(41,37,36,0.35)] backdrop-blur xl:hidden">
+                    <div className="sticky top-3 z-30 mb-4 flex items-center justify-between rounded-[24px] border border-white/60 bg-white/90 px-4 py-3 shadow-[0_25px_80px_-35px_rgba(41,37,36,0.35)] backdrop-blur xl:hidden">
                         <div>
                             <p className="text-xs font-semibold uppercase tracking-[0.3em] text-amber-700">
                                 BMN-BPKH11
@@ -163,30 +207,14 @@ export default function AppLayout({ title, description, actions, children }) {
                         </div>
                         <button
                             type="button"
-                            onClick={() => setSidebarOpen((value) => !value)}
+                            onClick={() => setSidebarOpen(true)}
                             className="rounded-2xl bg-stone-900 px-4 py-2 text-sm font-medium text-white"
                         >
                             Menu
                         </button>
                     </div>
 
-                    {sidebarOpen ? (
-                        <div className="mb-4 rounded-[28px] border border-white/60 bg-white/90 p-4 shadow-[0_25px_80px_-35px_rgba(41,37,36,0.35)] backdrop-blur xl:hidden">
-                            {navigationSections.map((section) => (
-                                <div key={section.key} className="mb-5 last:mb-0">
-                                    <NavigationSection
-                                        section={section}
-                                        url={url}
-                                        openSections={openSections}
-                                        toggleSection={toggleSection}
-                                        onNavigate={() => setSidebarOpen(false)}
-                                    />
-                                </div>
-                            ))}
-                        </div>
-                    ) : null}
-
-                    <main className="rounded-[32px] border border-white/60 bg-white/80 p-6 shadow-[0_25px_80px_-35px_rgba(41,37,36,0.35)] backdrop-blur sm:p-8">
+                    <main className="rounded-[28px] border border-white/60 bg-white/85 p-4 shadow-[0_25px_80px_-35px_rgba(41,37,36,0.35)] backdrop-blur sm:p-6 lg:rounded-[32px] lg:p-8">
                         <div className="flex flex-col gap-4 border-b border-stone-200 pb-6 lg:flex-row lg:items-end lg:justify-between">
                             <div>
                                 <p className="text-xs font-semibold uppercase tracking-[0.3em] text-stone-400">
@@ -204,12 +232,12 @@ export default function AppLayout({ title, description, actions, children }) {
 
                             <div className="flex flex-col items-start gap-3 lg:items-end">
                                 {user ? (
-                                    <div className="rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 text-sm text-stone-700">
+                                    <div className="w-full rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 text-sm text-stone-700 lg:w-auto">
                                         Login sebagai <span className="font-semibold">{user.name}</span> ({user.username})
                                     </div>
                                 ) : null}
                                 {actions ? (
-                                    <div className="flex shrink-0 flex-wrap gap-3">
+                                    <div className="flex w-full shrink-0 flex-col gap-3 sm:flex-row sm:flex-wrap lg:w-auto lg:justify-end">
                                         {actions}
                                     </div>
                                 ) : null}

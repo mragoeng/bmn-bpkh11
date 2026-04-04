@@ -23,5 +23,9 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@bmn-bpkh11.local',
             'password' => Hash::make('admin123'),
         ]);
+
+        if (app()->environment('local')) {
+            $this->call(DevDummyDataSeeder::class);
+        }
     }
 }

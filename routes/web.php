@@ -129,7 +129,6 @@ Route::middleware('auth')->group(function () use ($renderDashboard, $formatRupia
         Route::get('/riwayat/{transaksi}/spj-preview', [TransaksiBbmController::class, 'previewSpj'])->name('riwayat.spj-preview');
         Route::get('/riwayat/{transaksi}/spj-print', [TransaksiBbmController::class, 'printSpj'])->name('riwayat.spj-print');
         Route::get('/riwayat/{transaksi}/spj-pdf', [TransaksiBbmController::class, 'downloadPdf'])->name('riwayat.spj-pdf');
-        Route::post('/riwayat/{transaksi}/spj-generate-google-doc', [TransaksiBbmController::class, 'generateGoogleDoc'])->name('riwayat.spj-generate-google-doc');
         Route::get('/riwayat', [TransaksiBbmController::class, 'index'])->name('riwayat');
 
         Route::get('/laporan', function () use ($formatRupiah) {

@@ -13,8 +13,8 @@ use App\Services\GoogleDocsSpjService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Services\CsvImportService;
 use App\Support\SpjPlaceholderBuilder;
-use Illuminate\Contracts\View\View;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Inertia\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -43,8 +43,7 @@ class TransaksiBbmController extends Controller
                     'liter' => rtrim(rtrim(number_format((float) $transaction->liter, 2, '.', ''), '0'), '.'),
                     'total' => $this->formatRupiah((float) $transaction->total),
                     'nomor_nota' => $transaction->nomor_nota,
-                    'spj_preview_url' => route('bbm.riwayat.spj-preview', $transaction),
-                    'spj_generate_google_doc_url' => route('bbm.riwayat.spj-generate-google-doc', $transaction),
+                    'spj_pdf_url' => route('bbm.riwayat.spj-pdf', $transaction),
                     'edit_url' => route('bbm.pencatatan.edit', $transaction),
                     'delete_url' => route('bbm.pencatatan.destroy', $transaction),
                 ]),
@@ -92,56 +91,40 @@ class TransaksiBbmController extends Controller
         );
     }
 
-    public function previewSpj(TransaksiBbm $transaksi): Response
+    public function previewSpj(TransaksiBbm $transaksi): RedirectResponse
     {
-        $spjData = $this->buildSpjData($transaksi);
-
-        return Inertia::render('Bbm/SpjPreview', [
-            ...$spjData,
-            'printUrl' => route('bbm.riwayat.spj-print', $transaksi),
-        ]);
+        return to_route('bbm.riwayat.spj-pdf', $transaksi);
     }
 
-    public function printSpj(TransaksiBbm $transaksi): View
+    public function printSpj(TransaksiBbm $transaksi): RedirectResponse
     {
-        $spjData = $this->buildSpjData($transaksi);
-
-        return view('print.spj', [
-            'transaction' => $spjData['transaction'],
-            'template' => $spjData['template'],
-            'placeholders' => $spjData['placeholders'],
-            'mergedContent' => $spjData['mergedContent'],
-        ]);
+        return to_route('bbm.riwayat.spj-pdf', $transaksi);
     }
 
-    public function generateGoogleDoc(
+    public function downloadPdf(
         TransaksiBbm $transaksi,
         GoogleDocsSpjService $googleDocsSpjService,
-    ): JsonResponse {
-        try {
-            $generatedDocument = $googleDocsSpjService->generateFromTransaction($transaksi);
-
-            return response()->json([
-                'message' => 'Google Docs SPJ berhasil dibuat.',
-                'document' => $generatedDocument,
-            ]);
-        } catch (Throwable $throwable) {
-            return response()->json([
-                'message' => $throwable->getMessage(),
-            ], 422);
-        }
-    }
-
-    public function downloadPdf(TransaksiBbm $transaksi)
+    )
     {
-        $spjData = $this->buildSpjData($transaksi);
-
-        $pdf = Pdf::loadView('print.spj-pdf', [
-            'transaction' => $spjData['transaction'],
-            'template' => $spjData['template'],
-            'placeholders' => $spjData['placeholders'],
-            'mergedContent' => $spjData['mergedContent'],
+        $spjData = $this->buildSpjData($transaksi, $googleDocsSpjService);
+        $pdf = Pdf::setOption([
+            'isRemoteEnabled' => true,
+            'isHtml5ParserEnabled' => true,
         ]);
+
+        if ($spjData['render_mode'] === 'html') {
+            $pdf->loadHTML($this->prepareGoogleTemplatePdfHtml($spjData['mergedContent']));
+        } else {
+            $pdf->loadView('print.spj-pdf', [
+                'transaction' => $spjData['transaction'],
+                'template' => $spjData['template'],
+                'placeholders' => $spjData['placeholders'],
+                'placeholderMap' => $spjData['placeholderMap'],
+                'mergedContent' => $spjData['mergedContent'],
+            ]);
+        }
+
+        $pdf->setPaper('a4');
 
         $filename = sprintf(
             'SPJ BBM - %s - %s.pdf',
@@ -149,7 +132,7 @@ class TransaksiBbmController extends Controller
             $transaksi->kendaraan?->nomor_polisi ?? 'tanpa-nopol',
         );
 
-        return $pdf->download($filename);
+        return $pdf->stream($filename);
     }
 
     public function downloadTemplate(): StreamedResponse
@@ -162,7 +145,10 @@ class TransaksiBbmController extends Controller
         ]);
     }
 
-    private function buildSpjData(TransaksiBbm $transaksi): array
+    private function buildSpjData(
+        TransaksiBbm $transaksi,
+        ?GoogleDocsSpjService $googleDocsSpjService = null,
+    ): array
     {
         $transaksi->load([
             'pegawai:id,nip,nama,jabatan,unit',
@@ -173,6 +159,21 @@ class TransaksiBbmController extends Controller
         $setting = PrintSetting::query()->first();
         $placeholders = SpjPlaceholderBuilder::build($transaksi);
         $template = SpjPlaceholderBuilder::templateMetadata($setting);
+        $templateContent = $template['template_content'];
+        $renderMode = 'text';
+
+        if ($googleDocsSpjService) {
+            try {
+                $resolvedTemplate = $googleDocsSpjService->resolveTemplateDocument($setting);
+                $templateContent = $resolvedTemplate['content'] ?? $templateContent;
+                $renderMode = $resolvedTemplate['format'] ?? 'text';
+            } catch (Throwable $throwable) {
+                Log::warning('Gagal menyiapkan template SPJ dari Google Docs. Template lokal/default akan dipakai.', [
+                    'transaction_id' => $transaksi->id,
+                    'message' => $throwable->getMessage(),
+                ]);
+            }
+        }
 
         return [
             'transaction' => [
@@ -191,10 +192,16 @@ class TransaksiBbmController extends Controller
                 ])
                 ->values()
                 ->all(),
+            'placeholderMap' => collect($placeholders)
+                ->mapWithKeys(fn (string $value, string $key) => [
+                    trim($key, '{}') => $value,
+                ])
+                ->all(),
             'mergedContent' => SpjPlaceholderBuilder::mergeTemplate(
-                $template['template_content'],
+                $templateContent,
                 $placeholders,
             ),
+            'render_mode' => $renderMode,
         ];
     }
 
@@ -250,5 +257,48 @@ class TransaksiBbmController extends Controller
     private function formatRupiah(float $value): string
     {
         return 'Rp '.number_format($value, 0, ',', '.');
+    }
+
+    private function prepareGoogleTemplatePdfHtml(string $html): string
+    {
+        $pageStyle = <<<'HTML'
+<style>
+    @page {
+        size: A4;
+        margin: 0;
+    }
+
+    html,
+    body {
+        margin: 0;
+    }
+
+    body {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+</style>
+HTML;
+
+        if (! preg_match('/<html\b/i', $html)) {
+            return <<<HTML
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8">
+    {$pageStyle}
+</head>
+<body>
+{$html}
+</body>
+</html>
+HTML;
+        }
+
+        if (preg_match('/<\/head>/i', $html)) {
+            return preg_replace('/<\/head>/i', $pageStyle.'</head>', $html, 1) ?? $html;
+        }
+
+        return preg_replace('/<html([^>]*)>/i', '<html$1><head><meta charset="utf-8">'.$pageStyle.'</head>', $html, 1) ?? $html;
     }
 }

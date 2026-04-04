@@ -1,14 +1,12 @@
-import AppLayout from '@/Layouts/AppLayout';
-import axios from 'axios';
+import Pagination from '@/Components/Pagination';
 import CsvImportCard from '@/Components/CsvImportCard';
+import AppLayout from '@/Layouts/AppLayout';
 import { Head, Link, router } from '@inertiajs/react';
 import { useState } from 'react';
 
 export default function Riwayat({ transactions }) {
-    const [isGeneratingId, setIsGeneratingId] = useState(null);
     const [isDeletingId, setIsDeletingId] = useState(null);
     const [actionError, setActionError] = useState('');
-    const [generatedDocument, setGeneratedDocument] = useState(null);
     const [showImport, setShowImport] = useState(false);
 
     const items = transactions.data || transactions;
@@ -18,40 +16,6 @@ export default function Riwayat({ transactions }) {
     const from = transactions.from || 0;
     const to = transactions.to || 0;
 
-    const handleGenerateGoogleDoc = async (item) => {
-        const popup = window.open('', '_blank');
-        if (popup) {
-            popup.document.write('Membuat dokumen Google Docs...');
-        }
-        setIsGeneratingId(item.id);
-        setActionError('');
-        setGeneratedDocument(null);
-        try {
-            const response = await axios.post(item.spj_generate_google_doc_url);
-            const document = response.data?.document;
-            if (!document?.url) {
-                throw new Error('URL dokumen Google Docs tidak ditemukan.');
-            }
-            setGeneratedDocument(document);
-            if (popup) {
-                popup.location.href = document.url;
-            } else {
-                window.open(document.url, '_blank');
-            }
-        } catch (error) {
-            if (popup) {
-                popup.close();
-            }
-            setActionError(
-                error.response?.data?.message ||
-                    error.message ||
-                    'Gagal membuat Google Docs.',
-            );
-        } finally {
-            setIsGeneratingId(null);
-        }
-    };
-
     const handleDelete = (item) => {
         if (
             !window.confirm(
@@ -60,9 +24,10 @@ export default function Riwayat({ transactions }) {
         ) {
             return;
         }
+
         setIsDeletingId(item.id);
         setActionError('');
-        setGeneratedDocument(null);
+
         router.delete(item.delete_url, {
             preserveScroll: true,
             onFinish: () => setIsDeletingId(null),
@@ -72,27 +37,26 @@ export default function Riwayat({ transactions }) {
         });
     };
 
-    const goToPage = (page) => {
-        if (page < 1 || page > lastPage) return;
-        router.visit(route('bbm.riwayat'), {
-            data: { page },
-            preserveState: true,
-            preserveScroll: true,
-        });
-    };
-
     return (
         <AppLayout
             title="Riwayat BBM"
-            description="Arsip seluruh transaksi BBM yang bisa difilter per tanggal, kendaraan, pegawai, dan digunakan untuk cetak SPJ."
+            description="Daftar transaksi BBM yang siap diedit, dihapus, atau langsung dicetak ke PDF tanpa langkah preview tambahan."
             actions={
-                <button
-                    type="button"
-                    onClick={() => setShowImport((value) => !value)}
-                    className="rounded-2xl border border-stone-300 px-4 py-3 text-sm font-medium text-stone-700"
-                >
-                    {showImport ? 'Tutup Import' : 'Import Riwayat BBM'}
-                </button>
+                <>
+                    <button
+                        type="button"
+                        onClick={() => setShowImport((value) => !value)}
+                        className="rounded-2xl border border-stone-300 px-4 py-3 text-sm font-medium text-stone-700"
+                    >
+                        {showImport ? 'Tutup Import' : 'Import Riwayat'}
+                    </button>
+                    <Link
+                        href={route('bbm.pencatatan')}
+                        className="rounded-2xl bg-stone-900 px-4 py-3 text-sm font-medium text-white"
+                    >
+                        Catat BBM Baru
+                    </Link>
+                </>
             }
         >
             <Head title="Riwayat BBM" />
@@ -122,172 +86,208 @@ export default function Riwayat({ transactions }) {
                     />
                 ) : null}
 
-                {generatedDocument ? (
-                    <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
-                        Google Docs berhasil dibuat.{' '}
-                        <a
-                            href={generatedDocument.url}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="font-semibold underline"
-                        >
-                            Buka dokumen
-                        </a>
-                    </div>
-                ) : null}
-
                 {actionError ? (
                     <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
                         {actionError}
                     </div>
                 ) : null}
 
-                <div className="grid gap-3 grid-cols-2 md:grid-cols-4">
-                    <input
-                        className="rounded-2xl border border-stone-300 px-4 py-3 text-sm"
-                        type="date"
-                    />
-                    <input
-                        className="rounded-2xl border border-stone-300 px-4 py-3 text-sm"
-                        type="date"
-                    />
-                    <input
-                        className="rounded-2xl border border-stone-300 px-4 py-3 text-sm"
-                        placeholder="Filter pegawai"
-                    />
-                    <input
-                        className="rounded-2xl border border-stone-300 px-4 py-3 text-sm"
-                        placeholder="Cari kendaraan atau nota"
-                    />
+                <div className="grid gap-4 sm:grid-cols-3">
+                    <div className="rounded-[24px] border border-stone-200 bg-stone-50 p-5">
+                        <p className="text-sm text-stone-500">Total transaksi</p>
+                        <p className="mt-2 text-2xl font-semibold text-stone-950">
+                            {total}
+                        </p>
+                    </div>
+                    <div className="rounded-[24px] border border-stone-200 bg-stone-50 p-5">
+                        <p className="text-sm text-stone-500">Halaman aktif</p>
+                        <p className="mt-2 text-2xl font-semibold text-stone-950">
+                            {currentPage} / {lastPage}
+                        </p>
+                    </div>
+                    <div className="rounded-[24px] border border-amber-200 bg-amber-50 p-5">
+                        <p className="text-sm text-amber-800">Cara paling cepat</p>
+                        <p className="mt-2 text-sm leading-6 text-amber-950">
+                            Ketuk <strong>Cetak PDF</strong> untuk membuka SPJ
+                            siap print di tab baru.
+                        </p>
+                    </div>
                 </div>
 
-                <div className="overflow-x-auto rounded-[24px] border border-stone-200 bg-white">
-                    <table className="w-full min-w-[640px] divide-y divide-stone-200 text-sm">
-                        <thead className="bg-stone-50 text-left text-stone-500">
-                            <tr>
-                                <th className="px-5 py-4 font-medium">Tanggal</th>
-                                <th className="px-5 py-4 font-medium">Pegawai</th>
-                                <th className="px-5 py-4 font-medium">Kendaraan</th>
-                                <th className="px-5 py-4 font-medium">Nomor Polisi</th>
-                                <th className="px-5 py-4 font-medium">Jenis BBM</th>
-                                <th className="px-5 py-4 font-medium">Liter</th>
-                                <th className="px-5 py-4 font-medium">Total</th>
-                                <th className="px-5 py-4 font-medium">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-stone-100">
-                            {items.length ? (
-                                items.map((item) => (
-                                    <tr key={item.id}>
-                                        <td className="px-5 py-4 text-stone-600">
+                <div className="grid gap-4 lg:hidden">
+                    {items.length ? (
+                        items.map((item) => (
+                            <article
+                                key={item.id}
+                                className="rounded-[24px] border border-stone-200 bg-white p-5"
+                            >
+                                <div className="flex items-start justify-between gap-4">
+                                    <div>
+                                        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-stone-400">
                                             {item.tanggal}
-                                        </td>
-                                        <td className="px-5 py-4 font-medium text-stone-950">
-                                            {item.pegawai}
-                                        </td>
-                                        <td className="px-5 py-4 text-stone-600">
-                                            {item.kendaraan}
-                                        </td>
-                                        <td className="px-5 py-4 text-stone-600">
+                                        </p>
+                                        <h3 className="mt-2 text-lg font-semibold text-stone-950">
                                             {item.nomor_polisi}
-                                        </td>
-                                        <td className="px-5 py-4 text-stone-600">
-                                            {item.jenis_bbm}
-                                        </td>
-                                        <td className="px-5 py-4 text-stone-600">
+                                        </h3>
+                                        <p className="mt-1 text-sm text-stone-600">
+                                            {item.kendaraan}
+                                        </p>
+                                    </div>
+                                    <div className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-900">
+                                        {item.jenis_bbm}
+                                    </div>
+                                </div>
+
+                                <dl className="mt-4 grid gap-3 text-sm text-stone-600 sm:grid-cols-2">
+                                    <div>
+                                        <dt className="text-stone-400">Pegawai</dt>
+                                        <dd className="mt-1 font-medium text-stone-950">
+                                            {item.pegawai}
+                                        </dd>
+                                    </div>
+                                    <div>
+                                        <dt className="text-stone-400">Liter</dt>
+                                        <dd className="mt-1 font-medium text-stone-950">
                                             {item.liter}
-                                        </td>
-                                        <td className="px-5 py-4 font-medium text-stone-950">
+                                        </dd>
+                                    </div>
+                                    <div>
+                                        <dt className="text-stone-400">Total</dt>
+                                        <dd className="mt-1 font-medium text-stone-950">
                                             {item.total}
-                                        </td>
-                                        <td className="px-5 py-4">
-                                            <div className="flex flex-wrap gap-2">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => handleGenerateGoogleDoc(item)}
-                                                    disabled={isGeneratingId === item.id}
-                                                    className="rounded-xl border border-stone-300 px-3 py-2 text-xs text-stone-700 disabled:opacity-60"
-                                                >
-                                                    {isGeneratingId === item.id ? 'Generating...' : 'Generate Google Docs'}
-                                                </button>
-                                                <Link
-                                                    href={item.spj_preview_url}
-                                                    className="rounded-xl border border-stone-300 px-3 py-2 text-xs text-stone-700"
-                                                >
-                                                    Preview SPJ
-                                                </Link>
-                                                <Link
-                                                    href={item.edit_url}
-                                                    className="rounded-xl border border-stone-300 px-3 py-2 text-xs text-stone-700"
-                                                >
-                                                    Edit
-                                                </Link>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => handleDelete(item)}
-                                                    disabled={isDeletingId === item.id}
-                                                    className="rounded-xl border border-rose-300 px-3 py-2 text-xs text-rose-700 disabled:opacity-60"
-                                                >
-                                                    {isDeletingId === item.id ? 'Menghapus...' : 'Hapus'}
-                                                </button>
-                                            </div>
+                                        </dd>
+                                    </div>
+                                    <div>
+                                        <dt className="text-stone-400">Nota</dt>
+                                        <dd className="mt-1 font-medium text-stone-950">
+                                            {item.nomor_nota || '-'}
+                                        </dd>
+                                    </div>
+                                </dl>
+
+                                <div className="mt-5 flex flex-col gap-2 sm:flex-row">
+                                    <a
+                                        href={item.spj_pdf_url}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="rounded-2xl bg-stone-900 px-4 py-3 text-center text-sm font-medium text-white"
+                                    >
+                                        Cetak PDF
+                                    </a>
+                                    <Link
+                                        href={item.edit_url}
+                                        className="rounded-2xl border border-stone-300 px-4 py-3 text-center text-sm font-medium text-stone-700"
+                                    >
+                                        Edit
+                                    </Link>
+                                    <button
+                                        type="button"
+                                        onClick={() => handleDelete(item)}
+                                        disabled={isDeletingId === item.id}
+                                        className="rounded-2xl border border-rose-300 px-4 py-3 text-sm font-medium text-rose-700 disabled:opacity-60"
+                                    >
+                                        {isDeletingId === item.id ? 'Menghapus...' : 'Hapus'}
+                                    </button>
+                                </div>
+                            </article>
+                        ))
+                    ) : (
+                        <div className="rounded-[24px] border border-dashed border-stone-300 bg-stone-50 p-8 text-center text-sm text-stone-500">
+                            Belum ada transaksi BBM yang tercatat.
+                        </div>
+                    )}
+                </div>
+
+                <div className="hidden overflow-hidden rounded-[24px] border border-stone-200 bg-white lg:block">
+                    <div className="overflow-x-auto">
+                        <table className="w-full min-w-[820px] divide-y divide-stone-200 text-sm">
+                            <thead className="bg-stone-50 text-left text-stone-500">
+                                <tr>
+                                    <th className="px-5 py-4 font-medium">Tanggal</th>
+                                    <th className="px-5 py-4 font-medium">Pegawai</th>
+                                    <th className="px-5 py-4 font-medium">Kendaraan</th>
+                                    <th className="px-5 py-4 font-medium">Nomor Polisi</th>
+                                    <th className="px-5 py-4 font-medium">Jenis BBM</th>
+                                    <th className="px-5 py-4 font-medium">Liter</th>
+                                    <th className="px-5 py-4 font-medium">Total</th>
+                                    <th className="px-5 py-4 font-medium">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-stone-100">
+                                {items.length ? (
+                                    items.map((item) => (
+                                        <tr key={item.id}>
+                                            <td className="px-5 py-4 text-stone-600">
+                                                {item.tanggal}
+                                            </td>
+                                            <td className="px-5 py-4 font-medium text-stone-950">
+                                                {item.pegawai}
+                                            </td>
+                                            <td className="px-5 py-4 text-stone-600">
+                                                {item.kendaraan}
+                                            </td>
+                                            <td className="px-5 py-4 text-stone-600">
+                                                {item.nomor_polisi}
+                                            </td>
+                                            <td className="px-5 py-4 text-stone-600">
+                                                {item.jenis_bbm}
+                                            </td>
+                                            <td className="px-5 py-4 text-stone-600">
+                                                {item.liter}
+                                            </td>
+                                            <td className="px-5 py-4 font-medium text-stone-950">
+                                                {item.total}
+                                            </td>
+                                            <td className="px-5 py-4">
+                                                <div className="flex flex-wrap gap-2">
+                                                    <a
+                                                        href={item.spj_pdf_url}
+                                                        target="_blank"
+                                                        rel="noreferrer"
+                                                        className="rounded-xl bg-stone-900 px-3 py-2 text-xs font-medium text-white"
+                                                    >
+                                                        Cetak PDF
+                                                    </a>
+                                                    <Link
+                                                        href={item.edit_url}
+                                                        className="rounded-xl border border-stone-300 px-3 py-2 text-xs font-medium text-stone-700"
+                                                    >
+                                                        Edit
+                                                    </Link>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleDelete(item)}
+                                                        disabled={isDeletingId === item.id}
+                                                        className="rounded-xl border border-rose-300 px-3 py-2 text-xs font-medium text-rose-700 disabled:opacity-60"
+                                                    >
+                                                        {isDeletingId === item.id ? 'Menghapus...' : 'Hapus'}
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td
+                                            colSpan="8"
+                                            className="px-5 py-8 text-center text-stone-500"
+                                        >
+                                            Belum ada transaksi BBM yang tercatat.
                                         </td>
                                     </tr>
-                                ))
-                            ) : (
-                                <tr>
-                                    <td colSpan="8" className="px-5 py-8 text-center text-stone-500">
-                                        Belum ada transaksi BBM yang tercatat.
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
-                {lastPage > 1 ? (
-                    <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-between">
-                        <p className="text-xs text-stone-500 sm:text-sm">
-                            Menampilkan {from}&ndash;{to} dari {total} transaksi
-                        </p>
-                        <div className="flex items-center gap-1">
-                            {currentPage > 1 ? (
-                                <Link
-                                    href={route('bbm.riwayat', { page: currentPage - 1 })}
-                                    preserveScroll preserveState
-                                    className="rounded-lg border border-stone-300 px-2 py-1.5 text-xs text-stone-700 sm:px-3 sm:py-2 sm:text-sm"
-                                >
-                                    &#x2190;
-                                </Link>
-                            ) : null}
-                            {Array.from({ length: lastPage }, (_, i) => i + 1)
-                                .filter((p) => p === 1 || p === lastPage || Math.abs(p - currentPage) <= 2)
-                                .map((p) => (
-                                    <Link
-                                        key={p}
-                                        href={route('bbm.riwayat', { page: p })}
-                                        preserveScroll preserveState
-                                        className={`rounded-lg px-2 py-1.5 text-xs font-medium sm:px-3 sm:py-2 sm:text-sm ${
-                                            p === currentPage
-                                                ? 'bg-amber-400 text-stone-950'
-                                                : 'border border-stone-300 text-stone-700'
-                                        }`}
-                                    >
-                                        {p}
-                                    </Link>
-                                ))}
-                            {currentPage < lastPage ? (
-                                <Link
-                                    href={route('bbm.riwayat', { page: currentPage + 1 })}
-                                    preserveScroll preserveState
-                                    className="rounded-lg border border-stone-300 px-2 py-1.5 text-xs text-stone-700 sm:px-3 sm:py-2 sm:text-sm"
-                                >
-                                    &#x2192;
-                                </Link>
-                            ) : null}
-                        </div>
+                {items.length ? (
+                    <div className="rounded-[24px] border border-stone-200 bg-stone-50 px-4 py-3 text-sm text-stone-600">
+                        Menampilkan {from}&ndash;{to} dari {total} transaksi.
                     </div>
                 ) : null}
+
+                <Pagination data={transactions} routeName="bbm.riwayat" />
             </div>
         </AppLayout>
     );

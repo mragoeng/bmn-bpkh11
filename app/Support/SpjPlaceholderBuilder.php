@@ -68,11 +68,21 @@ Data SPJ:
 - Catatan: {{catatan}}
 TEXT;
 
-        return str_replace(
-            array_keys($placeholders),
-            array_values($placeholders),
-            filled($template) ? $template : $defaultTemplate,
-        );
+        $content = filled($template) ? $template : $defaultTemplate;
+        $isHtmlTemplate = self::looksLikeHtml($content);
+        $normalizedPlaceholders = collect($placeholders)
+            ->mapWithKeys(fn (string $value, string $key) => [
+                mb_strtolower(trim($key, '{} ')) => $isHtmlTemplate
+                    ? nl2br(e($value), false)
+                    : $value,
+            ])
+            ->all();
+
+        return preg_replace_callback('/{{\s*([^}]+?)\s*}}/u', function (array $matches) use ($normalizedPlaceholders) {
+            $lookupKey = mb_strtolower(trim($matches[1]));
+
+            return $normalizedPlaceholders[$lookupKey] ?? $matches[0];
+        }, $content) ?? $content;
     }
 
     public static function templateMetadata(?PrintSetting $setting): array
@@ -80,7 +90,6 @@ TEXT;
         return [
             'nama_template' => $setting?->nama_template ?? 'SPJ BBM Kendaraan Dinas',
             'google_docs_url' => $setting?->google_docs_url ?? '',
-            'google_drive_folder_url' => $setting?->google_drive_folder_url ?? '',
             'template_content' => $setting?->template_content ?? '',
             'keterangan' => $setting?->keterangan ?? '',
         ];
@@ -105,5 +114,10 @@ TEXT;
         }
 
         return self::formatRupiah($value);
+    }
+
+    private static function looksLikeHtml(string $content): bool
+    {
+        return preg_match('/<\s*(html|body|table|tr|td|p|div|span)\b/i', $content) === 1;
     }
 }
