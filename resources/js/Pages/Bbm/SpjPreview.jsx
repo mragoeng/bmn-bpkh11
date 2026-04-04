@@ -88,6 +88,12 @@ export default function SpjPreview({
                     >
                         Cetak SPJ
                     </a>
+                    <a
+                        href={route('bbm.riwayat.spj-pdf', transaction.id)}
+                        className="rounded-2xl bg-amber-700 px-4 py-3 text-sm font-medium text-white hover:bg-amber-800"
+                    >
+                        Download PDF
+                    </a>
                     <Link
                         href={route('bbm.riwayat')}
                         className="rounded-2xl bg-stone-900 px-4 py-3 text-sm font-medium text-white"

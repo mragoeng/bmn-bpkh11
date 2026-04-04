@@ -10,6 +10,7 @@ use App\Models\Pegawai;
 use App\Models\PrintSetting;
 use App\Models\TransaksiBbm;
 use App\Services\GoogleDocsSpjService;
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Services\CsvImportService;
 use App\Support\SpjPlaceholderBuilder;
 use Illuminate\Contracts\View\View;
@@ -129,6 +130,26 @@ class TransaksiBbmController extends Controller
                 'message' => $throwable->getMessage(),
             ], 422);
         }
+    }
+
+    public function downloadPdf(TransaksiBbm $transaksi)
+    {
+        $spjData = $this->buildSpjData($transaksi);
+
+        $pdf = Pdf::loadView('print.spj-pdf', [
+            'transaction' => $spjData['transaction'],
+            'template' => $spjData['template'],
+            'placeholders' => $spjData['placeholders'],
+            'mergedContent' => $spjData['mergedContent'],
+        ]);
+
+        $filename = sprintf(
+            'SPJ BBM - %s - %s.pdf',
+            $transaksi->tanggal,
+            $transaksi->kendaraan?->nomor_polisi ?? 'tanpa-nopol',
+        );
+
+        return $pdf->download($filename);
     }
 
     public function downloadTemplate(): StreamedResponse
