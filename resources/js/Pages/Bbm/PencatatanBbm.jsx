@@ -5,7 +5,7 @@ import { Head, Link, useForm } from '@inertiajs/react';
 function Field({ label, children }) {
     return (
         <label className="block">
-            <span className="mb-2 block text-sm font-medium text-stone-700">
+            <span className="mb-2 block text-sm font-medium text-gray-700">
                 {label}
             </span>
             {children}
@@ -17,7 +17,7 @@ function Input(props) {
     return (
         <input
             {...props}
-            className="w-full rounded-2xl border border-stone-300 px-4 py-3 text-sm"
+            className="w-full rounded-2xl border border-gray-300 px-4 py-3 text-sm"
         />
     );
 }
@@ -26,7 +26,7 @@ function Select({ children, ...props }) {
     return (
         <select
             {...props}
-            className="w-full rounded-2xl border border-stone-300 px-4 py-3 text-sm"
+            className="w-full rounded-2xl border border-gray-300 px-4 py-3 text-sm"
         >
             {children}
         </select>
@@ -154,7 +154,7 @@ export default function PencatatanBbm({
                     {isEditMode ? (
                         <Link
                             href={route('bbm.riwayat')}
-                            className="rounded-2xl border border-stone-300 px-4 py-3 text-sm font-medium text-stone-700"
+                            className="rounded-2xl border border-gray-300 px-4 py-3 text-sm font-medium text-gray-700"
                         >
                             Kembali ke Riwayat
                         </Link>
@@ -163,7 +163,7 @@ export default function PencatatanBbm({
                         type="submit"
                         form="pencatatan-bbm-form"
                         disabled={form.processing}
-                        className="rounded-2xl bg-stone-900 px-4 py-3 text-sm font-medium text-white disabled:opacity-60"
+                        className="rounded-2xl bg-primary px-4 py-3 text-sm font-medium text-white disabled:opacity-60"
                     >
                         {form.processing
                             ? isEditMode
@@ -184,8 +184,8 @@ export default function PencatatanBbm({
                     onSubmit={submit}
                     className="space-y-6"
                 >
-                    <div className="rounded-[28px] border border-stone-200 bg-stone-50 p-6">
-                        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-stone-400">
+                    <div className="rounded-xl border border-gray-200 bg-gray-50 p-6">
+                        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gray-400">
                             Data Dasar
                         </p>
                         <div className="mt-5 grid gap-5 md:grid-cols-2">
@@ -273,8 +273,8 @@ export default function PencatatanBbm({
                         </div>
                     </div>
 
-                    <div className="rounded-[28px] border border-stone-200 bg-stone-50 p-6">
-                        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-stone-400">
+                    <div className="rounded-xl border border-gray-200 bg-gray-50 p-6">
+                        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gray-400">
                             Detail Pembelian
                         </p>
                         <div className="mt-5 grid gap-5 md:grid-cols-2">
@@ -379,8 +379,8 @@ export default function PencatatanBbm({
                         </div>
                     </div>
 
-                    <div className="rounded-[28px] border border-stone-200 bg-stone-50 p-6">
-                        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-stone-400">
+                    <div className="rounded-xl border border-gray-200 bg-gray-50 p-6">
+                        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gray-400">
                             Catatan Tambahan
                         </p>
                         <div className="mt-5">
@@ -388,7 +388,7 @@ export default function PencatatanBbm({
                                 <>
                                     <textarea
                                         rows="4"
-                                        className="w-full rounded-2xl border border-stone-300 px-4 py-3 text-sm"
+                                        className="w-full rounded-2xl border border-gray-300 px-4 py-3 text-sm"
                                         placeholder="Catatan tambahan bila perlu"
                                         value={form.data.catatan}
                                         onChange={(event) =>
@@ -409,8 +409,8 @@ export default function PencatatanBbm({
                 </form>
 
                 <div className="space-y-6">
-                    <div className="rounded-[28px] border border-stone-200 bg-white p-6">
-                        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-stone-400">
+                    <div className="rounded-xl border border-gray-200 bg-white p-6">
+                        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gray-400">
                             Mapping SPJ
                         </p>
                         <div className="mt-4 space-y-4">
@@ -452,7 +452,7 @@ export default function PencatatanBbm({
                                     />
                                 </>
                             </Field>
-                            <div className="rounded-2xl bg-amber-50 p-4 text-sm leading-6 text-amber-900">
+                            <div className="rounded-2xl bg-accent-light p-4 text-sm leading-6 text-accent-dark">
                                 Akun pembayaran akan dipilih otomatis sesuai
                                 tahun transaksi dan jenis kendaraan. Jika perlu,
                                 Anda tetap bisa menggantinya manual.
@@ -460,8 +460,8 @@ export default function PencatatanBbm({
                         </div>
                     </div>
 
-                    <div className="rounded-[28px] border border-stone-200 bg-stone-900 p-6 text-stone-100">
-                        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-stone-400">
+                    <div className="rounded-xl border border-gray-200 bg-primary p-6 text-stone-100">
+                        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gray-400">
                             Ringkasan
                         </p>
                         <dl className="mt-4 space-y-3 text-sm">
@@ -492,7 +492,7 @@ export default function PencatatanBbm({
                                 </dd>
                             </div>
                         </dl>
-                        <div className="mt-5 rounded-2xl border border-white/10 bg-white/5 p-4 text-sm leading-6 text-stone-300">
+                        <div className="mt-5 rounded-2xl border border-white/10 bg-white/5 p-4 text-sm leading-6 text-gray-300">
                             Setelah disimpan, transaksi ini bisa langsung
                             dicetak ke PDF dari halaman riwayat tanpa preview.
                         </div>

@@ -159,6 +159,16 @@
             <td>{{ $placeholderMap['spbu'] ?? '-' }}</td>
         </tr>
         <tr>
+            <td class="label">Kode Akun Pembayaran</td>
+            <td class="separator">:</td>
+            <td>{{ $placeholderMap['kode_akun_pembayaran'] ?? '-' }}</td>
+        </tr>
+        <tr>
+            <td class="label">Nama Akun Pembayaran</td>
+            <td class="separator">:</td>
+            <td>{{ $placeholderMap['nama_akun_pembayaran'] ?? '-' }}</td>
+        </tr>
+        <tr>
             <td class="label">Nomor Nota</td>
             <td class="separator">:</td>
             <td>{{ $placeholderMap['nomor_nota'] ?? '-' }}</td>

@@ -54,7 +54,7 @@ export default function PengaturanPrint({ template, googleDocsSetup }) {
                     type="submit"
                     form="print-setting-form"
                     disabled={form.processing}
-                    className="rounded-2xl bg-stone-900 px-4 py-3 text-sm font-medium text-white disabled:opacity-60"
+                    className="rounded-2xl bg-primary px-4 py-3 text-sm font-medium text-white disabled:opacity-60"
                 >
                     {form.processing ? 'Menyimpan...' : 'Simpan Pengaturan'}
                 </button>
@@ -68,18 +68,18 @@ export default function PengaturanPrint({ template, googleDocsSetup }) {
                     onSubmit={submit}
                     className="space-y-6"
                 >
-                    <div className="rounded-[28px] border border-stone-200 bg-stone-50 p-6">
-                        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-stone-400">
+                    <div className="rounded-xl border border-gray-200 bg-gray-50 p-6">
+                        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gray-400">
                             Template SPJ
                         </p>
 
                         <div className="mt-5 grid gap-5">
                             <label className="block">
-                                <span className="mb-2 block text-sm font-medium text-stone-700">
+                                <span className="mb-2 block text-sm font-medium text-gray-700">
                                     Nama Template
                                 </span>
                                 <input
-                                    className="w-full rounded-2xl border border-stone-300 px-4 py-3 text-sm"
+                                    className="w-full rounded-2xl border border-gray-300 px-4 py-3 text-sm"
                                     value={form.data.nama_template}
                                     onChange={(event) =>
                                         form.setData(
@@ -94,7 +94,7 @@ export default function PengaturanPrint({ template, googleDocsSetup }) {
                                 />
                             </label>
 
-                            <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-950">
+                            <div className="rounded-2xl border border-accent-200 bg-accent-light p-4 text-sm leading-6 text-amber-950">
                                 Jika URL Google Docs diisi, sistem akan membaca
                                 dokumen itu langsung dan mencetak PDF dari
                                 desain yang sama. Tidak ada lagi pembuatan
@@ -102,11 +102,11 @@ export default function PengaturanPrint({ template, googleDocsSetup }) {
                             </div>
 
                             <label className="block">
-                                <span className="mb-2 block text-sm font-medium text-stone-700">
+                                <span className="mb-2 block text-sm font-medium text-gray-700">
                                     URL Google Docs
                                 </span>
                                 <input
-                                    className="w-full rounded-2xl border border-stone-300 px-4 py-3 text-sm"
+                                    className="w-full rounded-2xl border border-gray-300 px-4 py-3 text-sm"
                                     value={form.data.google_docs_url}
                                     placeholder="https://docs.google.com/document/d/..."
                                     onChange={(event) =>
@@ -116,7 +116,7 @@ export default function PengaturanPrint({ template, googleDocsSetup }) {
                                         )
                                     }
                                 />
-                                <p className="mt-2 text-xs leading-5 text-stone-500">
+                                <p className="mt-2 text-xs leading-5 text-gray-500">
                                     Opsional. Cocok jika template SPJ masih
                                     disimpan di Google Docs.
                                 </p>
@@ -127,7 +127,7 @@ export default function PengaturanPrint({ template, googleDocsSetup }) {
                             </label>
 
                             {form.data.google_docs_url ? (
-                                <div className="rounded-2xl border border-stone-200 bg-white p-4 text-sm leading-6 text-stone-700">
+                                <div className="rounded-2xl border border-gray-200 bg-white p-4 text-sm leading-6 text-gray-700">
                                     Desain cetak mengikuti Google Docs di atas.
                                     Tidak ada template kedua yang perlu Anda
                                     isi. Sistem hanya menyimpan salinan sinkron
@@ -136,12 +136,12 @@ export default function PengaturanPrint({ template, googleDocsSetup }) {
                                 </div>
                             ) : (
                                 <label className="block">
-                                    <span className="mb-2 block text-sm font-medium text-stone-700">
+                                    <span className="mb-2 block text-sm font-medium text-gray-700">
                                         Template Manual
                                     </span>
                                     <textarea
                                         rows="12"
-                                        className="w-full rounded-2xl border border-stone-300 px-4 py-3 text-sm leading-6"
+                                        className="w-full rounded-2xl border border-gray-300 px-4 py-3 text-sm leading-6"
                                         placeholder="Isi template SPJ jika tidak menggunakan Google Docs."
                                         value={form.data.template_content}
                                         onChange={(event) =>
@@ -151,7 +151,7 @@ export default function PengaturanPrint({ template, googleDocsSetup }) {
                                             )
                                         }
                                     />
-                                    <p className="mt-2 text-xs leading-5 text-stone-500">
+                                    <p className="mt-2 text-xs leading-5 text-gray-500">
                                         Dipakai hanya jika Anda tidak memakai
                                         Google Docs sebagai template utama.
                                     </p>
@@ -163,12 +163,12 @@ export default function PengaturanPrint({ template, googleDocsSetup }) {
                             )}
 
                             <label className="block">
-                                <span className="mb-2 block text-sm font-medium text-stone-700">
+                                <span className="mb-2 block text-sm font-medium text-gray-700">
                                     Catatan
                                 </span>
                                 <textarea
                                     rows="5"
-                                    className="w-full rounded-2xl border border-stone-300 px-4 py-3 text-sm"
+                                    className="w-full rounded-2xl border border-gray-300 px-4 py-3 text-sm"
                                     placeholder="Catatan singkat untuk admin."
                                     value={form.data.keterangan}
                                     onChange={(event) =>
@@ -188,15 +188,15 @@ export default function PengaturanPrint({ template, googleDocsSetup }) {
                 </form>
 
                 <div className="space-y-6">
-                    <div className="rounded-[28px] border border-stone-200 bg-white p-6">
-                        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-stone-400">
+                    <div className="rounded-xl border border-gray-200 bg-white p-6">
+                        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gray-400">
                             Akses Google
                         </p>
 
-                        <div className="mt-4 rounded-2xl bg-stone-50 p-4 text-sm leading-7 text-stone-700">
+                        <div className="mt-4 rounded-2xl bg-gray-50 p-4 text-sm leading-7 text-gray-700">
                             <div>
                                 Mode aktif:{' '}
-                                <span className="font-semibold text-stone-950">
+                                <span className="font-semibold text-gray-900">
                                     {googleDocsSetup.auth_mode.label}
                                 </span>
                             </div>
@@ -214,7 +214,7 @@ export default function PengaturanPrint({ template, googleDocsSetup }) {
                             </div>
                         </div>
 
-                        <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-950">
+                        <div className="mt-4 rounded-2xl border border-accent-200 bg-accent-light p-4 text-sm leading-6 text-amber-950">
                             Cara paling simpel: buat refresh token lewat Google
                             OAuth Playground, lalu simpan nilainya di `.env`.
                             Setelah itu sistem bisa baca template Google Docs
@@ -226,7 +226,7 @@ export default function PengaturanPrint({ template, googleDocsSetup }) {
                                 type="button"
                                 onClick={testGoogleDocsConnection}
                                 disabled={isTestingConnection}
-                                className="rounded-2xl border border-stone-300 px-4 py-3 text-sm font-medium text-stone-700 disabled:opacity-60"
+                                className="rounded-2xl border border-gray-300 px-4 py-3 text-sm font-medium text-gray-700 disabled:opacity-60"
                             >
                                 {isTestingConnection
                                     ? 'Mengecek Template...'
@@ -241,13 +241,13 @@ export default function PengaturanPrint({ template, googleDocsSetup }) {
                         ) : null}
 
                         {template.google_last_error ? (
-                            <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-7 text-amber-950">
+                            <div className="mt-4 rounded-2xl border border-accent-200 bg-accent-light p-4 text-sm leading-7 text-amber-950">
                                 Error sinkron terakhir: {template.google_last_error}
                             </div>
                         ) : null}
 
                         {connectionResult ? (
-                            <div className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm leading-7 text-emerald-900">
+                            <div className="mt-4 rounded-2xl border border-primary-pale bg-primary-pale/30 p-4 text-sm leading-7 text-primary-dark">
                                 <div>{connectionResult.message}</div>
                                 <div className="mt-2">
                                     Template: {connectionResult.template?.title}
@@ -269,11 +269,11 @@ export default function PengaturanPrint({ template, googleDocsSetup }) {
                         ) : null}
                     </div>
 
-                    <div className="rounded-[28px] border border-stone-200 bg-white p-6">
-                        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-stone-400">
+                    <div className="rounded-xl border border-gray-200 bg-white p-6">
+                        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gray-400">
                             Placeholder Tersedia
                         </p>
-                        <p className="mt-3 text-sm leading-6 text-stone-600">
+                        <p className="mt-3 text-sm leading-6 text-gray-600">
                             Gunakan placeholder ini di Google Docs atau template
                             manual agar nilainya terisi otomatis.
                         </p>
@@ -289,8 +289,8 @@ export default function PengaturanPrint({ template, googleDocsSetup }) {
                         </div>
                     </div>
 
-                    <div className="rounded-[28px] border border-stone-200 bg-stone-900 p-6 text-stone-100">
-                        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-stone-400">
+                    <div className="rounded-xl border border-gray-200 bg-primary p-6 text-stone-100">
+                        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gray-400">
                             Alur Baru
                         </p>
                         <div className="mt-4 space-y-3 text-sm leading-6">

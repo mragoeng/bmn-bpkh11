@@ -46,13 +46,13 @@ export default function Riwayat({ transactions }) {
                     <button
                         type="button"
                         onClick={() => setShowImport((value) => !value)}
-                        className="rounded-2xl border border-stone-300 px-4 py-3 text-sm font-medium text-stone-700"
+                        className="rounded-2xl border border-gray-300 px-4 py-3 text-sm font-medium text-gray-700"
                     >
                         {showImport ? 'Tutup Import' : 'Import Riwayat'}
                     </button>
                     <Link
                         href={route('bbm.pencatatan')}
-                        className="rounded-2xl bg-stone-900 px-4 py-3 text-sm font-medium text-white"
+                        className="rounded-2xl bg-primary px-4 py-3 text-sm font-medium text-white"
                     >
                         Catat BBM Baru
                     </Link>
@@ -93,20 +93,20 @@ export default function Riwayat({ transactions }) {
                 ) : null}
 
                 <div className="grid gap-4 sm:grid-cols-3">
-                    <div className="rounded-[24px] border border-stone-200 bg-stone-50 p-5">
-                        <p className="text-sm text-stone-500">Total transaksi</p>
-                        <p className="mt-2 text-2xl font-semibold text-stone-950">
+                    <div className="rounded-xl border border-gray-200 bg-gray-50 p-5">
+                        <p className="text-sm text-gray-500">Total transaksi</p>
+                        <p className="mt-2 text-2xl font-semibold text-gray-900">
                             {total}
                         </p>
                     </div>
-                    <div className="rounded-[24px] border border-stone-200 bg-stone-50 p-5">
-                        <p className="text-sm text-stone-500">Halaman aktif</p>
-                        <p className="mt-2 text-2xl font-semibold text-stone-950">
+                    <div className="rounded-xl border border-gray-200 bg-gray-50 p-5">
+                        <p className="text-sm text-gray-500">Halaman aktif</p>
+                        <p className="mt-2 text-2xl font-semibold text-gray-900">
                             {currentPage} / {lastPage}
                         </p>
                     </div>
-                    <div className="rounded-[24px] border border-amber-200 bg-amber-50 p-5">
-                        <p className="text-sm text-amber-800">Cara paling cepat</p>
+                    <div className="rounded-xl border border-accent-200 bg-accent-light p-5">
+                        <p className="text-sm text-accent-dark">Cara paling cepat</p>
                         <p className="mt-2 text-sm leading-6 text-amber-950">
                             Ketuk <strong>Cetak PDF</strong> untuk membuka SPJ
                             siap print di tab baru.
@@ -119,47 +119,47 @@ export default function Riwayat({ transactions }) {
                         items.map((item) => (
                             <article
                                 key={item.id}
-                                className="rounded-[24px] border border-stone-200 bg-white p-5"
+                                className="rounded-xl border border-gray-200 bg-white p-5"
                             >
                                 <div className="flex items-start justify-between gap-4">
                                     <div>
-                                        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-stone-400">
+                                        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">
                                             {item.tanggal}
                                         </p>
-                                        <h3 className="mt-2 text-lg font-semibold text-stone-950">
+                                        <h3 className="mt-2 text-lg font-semibold text-gray-900">
                                             {item.nomor_polisi}
                                         </h3>
-                                        <p className="mt-1 text-sm text-stone-600">
+                                        <p className="mt-1 text-sm text-gray-600">
                                             {item.kendaraan}
                                         </p>
                                     </div>
-                                    <div className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-900">
+                                    <div className="rounded-full bg-accent-light px-3 py-1 text-xs font-medium text-accent-dark">
                                         {item.jenis_bbm}
                                     </div>
                                 </div>
 
-                                <dl className="mt-4 grid gap-3 text-sm text-stone-600 sm:grid-cols-2">
+                                <dl className="mt-4 grid gap-3 text-sm text-gray-600 sm:grid-cols-2">
                                     <div>
-                                        <dt className="text-stone-400">Pegawai</dt>
-                                        <dd className="mt-1 font-medium text-stone-950">
+                                        <dt className="text-gray-400">Pegawai</dt>
+                                        <dd className="mt-1 font-medium text-gray-900">
                                             {item.pegawai}
                                         </dd>
                                     </div>
                                     <div>
-                                        <dt className="text-stone-400">Liter</dt>
-                                        <dd className="mt-1 font-medium text-stone-950">
+                                        <dt className="text-gray-400">Liter</dt>
+                                        <dd className="mt-1 font-medium text-gray-900">
                                             {item.liter}
                                         </dd>
                                     </div>
                                     <div>
-                                        <dt className="text-stone-400">Total</dt>
-                                        <dd className="mt-1 font-medium text-stone-950">
+                                        <dt className="text-gray-400">Total</dt>
+                                        <dd className="mt-1 font-medium text-gray-900">
                                             {item.total}
                                         </dd>
                                     </div>
                                     <div>
-                                        <dt className="text-stone-400">Nota</dt>
-                                        <dd className="mt-1 font-medium text-stone-950">
+                                        <dt className="text-gray-400">Nota</dt>
+                                        <dd className="mt-1 font-medium text-gray-900">
                                             {item.nomor_nota || '-'}
                                         </dd>
                                     </div>
@@ -170,13 +170,13 @@ export default function Riwayat({ transactions }) {
                                         href={item.spj_pdf_url}
                                         target="_blank"
                                         rel="noreferrer"
-                                        className="rounded-2xl bg-stone-900 px-4 py-3 text-center text-sm font-medium text-white"
+                                        className="rounded-2xl bg-primary px-4 py-3 text-center text-sm font-medium text-white"
                                     >
                                         Cetak PDF
                                     </a>
                                     <Link
                                         href={item.edit_url}
-                                        className="rounded-2xl border border-stone-300 px-4 py-3 text-center text-sm font-medium text-stone-700"
+                                        className="rounded-2xl border border-gray-300 px-4 py-3 text-center text-sm font-medium text-gray-700"
                                     >
                                         Edit
                                     </Link>
@@ -192,16 +192,16 @@ export default function Riwayat({ transactions }) {
                             </article>
                         ))
                     ) : (
-                        <div className="rounded-[24px] border border-dashed border-stone-300 bg-stone-50 p-8 text-center text-sm text-stone-500">
+                        <div className="rounded-xl border border-dashed border-gray-300 bg-gray-50 p-8 text-center text-sm text-gray-500">
                             Belum ada transaksi BBM yang tercatat.
                         </div>
                     )}
                 </div>
 
-                <div className="hidden overflow-hidden rounded-[24px] border border-stone-200 bg-white lg:block">
+                <div className="hidden overflow-hidden rounded-xl border border-gray-200 bg-white lg:block">
                     <div className="overflow-x-auto">
                         <table className="w-full min-w-[820px] divide-y divide-stone-200 text-sm">
-                            <thead className="bg-stone-50 text-left text-stone-500">
+                            <thead className="bg-gray-50 text-left text-gray-500">
                                 <tr>
                                     <th className="px-5 py-4 font-medium">Tanggal</th>
                                     <th className="px-5 py-4 font-medium">Pegawai</th>
@@ -217,25 +217,25 @@ export default function Riwayat({ transactions }) {
                                 {items.length ? (
                                     items.map((item) => (
                                         <tr key={item.id}>
-                                            <td className="px-5 py-4 text-stone-600">
+                                            <td className="px-5 py-4 text-gray-600">
                                                 {item.tanggal}
                                             </td>
-                                            <td className="px-5 py-4 font-medium text-stone-950">
+                                            <td className="px-5 py-4 font-medium text-gray-900">
                                                 {item.pegawai}
                                             </td>
-                                            <td className="px-5 py-4 text-stone-600">
+                                            <td className="px-5 py-4 text-gray-600">
                                                 {item.kendaraan}
                                             </td>
-                                            <td className="px-5 py-4 text-stone-600">
+                                            <td className="px-5 py-4 text-gray-600">
                                                 {item.nomor_polisi}
                                             </td>
-                                            <td className="px-5 py-4 text-stone-600">
+                                            <td className="px-5 py-4 text-gray-600">
                                                 {item.jenis_bbm}
                                             </td>
-                                            <td className="px-5 py-4 text-stone-600">
+                                            <td className="px-5 py-4 text-gray-600">
                                                 {item.liter}
                                             </td>
-                                            <td className="px-5 py-4 font-medium text-stone-950">
+                                            <td className="px-5 py-4 font-medium text-gray-900">
                                                 {item.total}
                                             </td>
                                             <td className="px-5 py-4">
@@ -244,13 +244,13 @@ export default function Riwayat({ transactions }) {
                                                         href={item.spj_pdf_url}
                                                         target="_blank"
                                                         rel="noreferrer"
-                                                        className="rounded-xl bg-stone-900 px-3 py-2 text-xs font-medium text-white"
+                                                        className="rounded-xl bg-primary px-3 py-2 text-xs font-medium text-white"
                                                     >
                                                         Cetak PDF
                                                     </a>
                                                     <Link
                                                         href={item.edit_url}
-                                                        className="rounded-xl border border-stone-300 px-3 py-2 text-xs font-medium text-stone-700"
+                                                        className="rounded-xl border border-gray-300 px-3 py-2 text-xs font-medium text-gray-700"
                                                     >
                                                         Edit
                                                     </Link>
@@ -270,7 +270,7 @@ export default function Riwayat({ transactions }) {
                                     <tr>
                                         <td
                                             colSpan="8"
-                                            className="px-5 py-8 text-center text-stone-500"
+                                            className="px-5 py-8 text-center text-gray-500"
                                         >
                                             Belum ada transaksi BBM yang tercatat.
                                         </td>
@@ -282,7 +282,7 @@ export default function Riwayat({ transactions }) {
                 </div>
 
                 {items.length ? (
-                    <div className="rounded-[24px] border border-stone-200 bg-stone-50 px-4 py-3 text-sm text-stone-600">
+                    <div className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-600">
                         Menampilkan {from}&ndash;{to} dari {total} transaksi.
                     </div>
                 ) : null}

@@ -10,35 +10,35 @@ export default function Laporan({ summary, rekap }) {
             <Head title="Laporan BBM" />
 
             <div className="mb-6 grid gap-4 lg:grid-cols-4">
-                <div className="rounded-[24px] border border-stone-200 bg-stone-50 p-5">
-                    <p className="text-sm text-stone-500">Periode</p>
-                    <p className="mt-2 text-lg font-semibold text-stone-950">
+                <div className="rounded-xl border border-gray-200 bg-gray-50 p-5">
+                    <p className="text-sm text-gray-500">Periode</p>
+                    <p className="mt-2 text-lg font-semibold text-gray-900">
                         {summary.periode}
                     </p>
                 </div>
-                <div className="rounded-[24px] border border-stone-200 bg-stone-50 p-5">
-                    <p className="text-sm text-stone-500">Total Transaksi</p>
-                    <p className="mt-2 text-3xl font-semibold text-stone-950">
+                <div className="rounded-xl border border-gray-200 bg-gray-50 p-5">
+                    <p className="text-sm text-gray-500">Total Transaksi</p>
+                    <p className="mt-2 text-3xl font-semibold text-gray-900">
                         {summary.total_transaksi}
                     </p>
                 </div>
-                <div className="rounded-[24px] border border-stone-200 bg-stone-50 p-5">
-                    <p className="text-sm text-stone-500">Total Liter</p>
-                    <p className="mt-2 text-3xl font-semibold text-stone-950">
+                <div className="rounded-xl border border-gray-200 bg-gray-50 p-5">
+                    <p className="text-sm text-gray-500">Total Liter</p>
+                    <p className="mt-2 text-3xl font-semibold text-gray-900">
                         {summary.total_liter}
                     </p>
                 </div>
-                <div className="rounded-[24px] border border-stone-200 bg-stone-50 p-5">
-                    <p className="text-sm text-stone-500">Total Nominal</p>
-                    <p className="mt-2 text-2xl font-semibold text-stone-950">
+                <div className="rounded-xl border border-gray-200 bg-gray-50 p-5">
+                    <p className="text-sm text-gray-500">Total Nominal</p>
+                    <p className="mt-2 text-2xl font-semibold text-gray-900">
                         {summary.total_nominal}
                     </p>
                 </div>
             </div>
 
-            <div className="overflow-hidden rounded-[24px] border border-stone-200 bg-white">
+            <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
                 <table className="min-w-full divide-y divide-stone-200 text-sm">
-                    <thead className="bg-stone-50 text-left text-stone-500">
+                    <thead className="bg-gray-50 text-left text-gray-500">
                         <tr>
                             <th className="px-5 py-4 font-medium">Kategori</th>
                             <th className="px-5 py-4 font-medium">Total Liter</th>
@@ -51,13 +51,13 @@ export default function Laporan({ summary, rekap }) {
                         {rekap.length ? (
                             rekap.map((item) => (
                                 <tr key={item.kategori}>
-                                    <td className="px-5 py-4 font-medium text-stone-950">
+                                    <td className="px-5 py-4 font-medium text-gray-900">
                                         {item.kategori}
                                     </td>
-                                    <td className="px-5 py-4 text-stone-600">
+                                    <td className="px-5 py-4 text-gray-600">
                                         {item.liter}
                                     </td>
-                                    <td className="px-5 py-4 text-stone-600">
+                                    <td className="px-5 py-4 text-gray-600">
                                         {item.nominal}
                                     </td>
                                 </tr>
@@ -66,7 +66,7 @@ export default function Laporan({ summary, rekap }) {
                             <tr>
                                 <td
                                     colSpan="3"
-                                    className="px-5 py-8 text-center text-stone-500"
+                                    className="px-5 py-8 text-center text-gray-500"
                                 >
                                     Belum ada data transaksi untuk direkap.
                                 </td>
