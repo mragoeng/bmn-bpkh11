@@ -31,8 +31,8 @@ class TransaksiBbmController extends Controller
                 ])
                 ->latest('tanggal')
                 ->latest('id')
-                ->get()
-                ->map(fn (TransaksiBbm $transaction) => [
+                ->paginate(15)
+                ->through(fn (TransaksiBbm $transaction) => [
                     'id' => $transaction->id,
                     'tanggal' => $transaction->tanggal,
                     'pegawai' => $transaction->pegawai?->nama ?? '-',
