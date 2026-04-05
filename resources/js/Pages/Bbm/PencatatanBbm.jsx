@@ -5,7 +5,7 @@ import { Head, Link, useForm } from '@inertiajs/react';
 function Field({ label, children }) {
     return (
         <label className="block">
-            <span className="mb-2 block text-sm font-medium text-gray-700">
+            <span className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                 {label}
             </span>
             {children}
@@ -17,7 +17,7 @@ function Input(props) {
     return (
         <input
             {...props}
-            className="w-full rounded-2xl border border-gray-300 px-4 py-3 text-sm"
+            className="w-full rounded-2xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 px-4 py-3 text-sm"
         />
     );
 }
@@ -26,7 +26,7 @@ function Select({ children, ...props }) {
     return (
         <select
             {...props}
-            className="w-full rounded-2xl border border-gray-300 px-4 py-3 text-sm"
+            className="w-full rounded-2xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 px-4 py-3 text-sm"
         >
             {children}
         </select>
@@ -154,7 +154,7 @@ export default function PencatatanBbm({
                     {isEditMode ? (
                         <Link
                             href={route('bbm.riwayat')}
-                            className="rounded-2xl border border-gray-300 px-4 py-3 text-sm font-medium text-gray-700"
+                            className="rounded-2xl border border-gray-300 dark:border-gray-600 px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300"
                         >
                             Kembali ke Riwayat
                         </Link>
@@ -184,8 +184,8 @@ export default function PencatatanBbm({
                     onSubmit={submit}
                     className="space-y-6"
                 >
-                    <div className="rounded-xl border border-gray-200 bg-gray-50 p-6">
-                        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gray-400">
+                    <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-6">
+                        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">
                             Data Dasar
                         </p>
                         <div className="mt-5 grid gap-5 md:grid-cols-2">
@@ -273,8 +273,8 @@ export default function PencatatanBbm({
                         </div>
                     </div>
 
-                    <div className="rounded-xl border border-gray-200 bg-gray-50 p-6">
-                        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gray-400">
+                    <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-6">
+                        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">
                             Detail Pembelian
                         </p>
                         <div className="mt-5 grid gap-5 md:grid-cols-2">
@@ -379,8 +379,8 @@ export default function PencatatanBbm({
                         </div>
                     </div>
 
-                    <div className="rounded-xl border border-gray-200 bg-gray-50 p-6">
-                        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gray-400">
+                    <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-6">
+                        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">
                             Catatan Tambahan
                         </p>
                         <div className="mt-5">
@@ -388,7 +388,7 @@ export default function PencatatanBbm({
                                 <>
                                     <textarea
                                         rows="4"
-                                        className="w-full rounded-2xl border border-gray-300 px-4 py-3 text-sm"
+                                        className="w-full rounded-2xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 px-4 py-3 text-sm"
                                         placeholder="Catatan tambahan bila perlu"
                                         value={form.data.catatan}
                                         onChange={(event) =>
@@ -409,8 +409,8 @@ export default function PencatatanBbm({
                 </form>
 
                 <div className="space-y-6">
-                    <div className="rounded-xl border border-gray-200 bg-white p-6">
-                        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gray-400">
+                    <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6">
+                        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">
                             Mapping SPJ
                         </p>
                         <div className="mt-4 space-y-4">
@@ -452,7 +452,7 @@ export default function PencatatanBbm({
                                     />
                                 </>
                             </Field>
-                            <div className="rounded-2xl bg-accent-light p-4 text-sm leading-6 text-accent-dark">
+                            <div className="rounded-2xl bg-accent-light dark:bg-accent-dark/30 p-4 text-sm leading-6 text-accent-dark dark:text-accent-light">
                                 Akun pembayaran akan dipilih otomatis sesuai
                                 tahun transaksi dan jenis kendaraan. Jika perlu,
                                 Anda tetap bisa menggantinya manual.
@@ -461,7 +461,7 @@ export default function PencatatanBbm({
                     </div>
 
                     <div className="rounded-xl border border-gray-200 bg-primary p-6 text-stone-100">
-                        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gray-400">
+                        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">
                             Ringkasan
                         </p>
                         <dl className="mt-4 space-y-3 text-sm">

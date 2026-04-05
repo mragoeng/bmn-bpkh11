@@ -248,6 +248,22 @@ class LaporanController extends Controller
         return $pdf->stream($filename);
     }
 
+    public function exportExcel(Request $request)
+    {
+        $periode = $request->input('periode', 'tahun');
+        $tahun = (int) $request->input('tahun', date('Y'));
+        $triwulan = (int) $request->input('triwulan', now()->quarter);
+        $bulan = (int) $request->input('bulan', date('m'));
+
+        $export = new \App\Exports\LaporanBbmExport($periode, $tahun, $triwulan, $bulan);
+        $data = $export->getFilteredData();
+
+        $filename = "Laporan BBM - {$data['periodeLabel']}.xlsx";
+
+        return \Maatwebsite\Excel\Facades\Excel::download($export, $filename);
+    }
+
+
     private function formatRupiah(float $value): string
     {
         return 'Rp ' . number_format($value, 0, ',', '.');

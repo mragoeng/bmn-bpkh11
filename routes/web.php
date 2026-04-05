@@ -134,6 +134,7 @@ Route::middleware('auth')->group(function () use ($renderDashboard, $formatRupia
 
         Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan');
         Route::get('/laporan/pdf', [LaporanController::class, 'cetakPdf'])->name('laporan.pdf');
+        Route::get('/laporan/excel', [LaporanController::class, 'exportExcel'])->name('laporan.excel');
     });
 
     Route::prefix('settings')->name('settings.')->group(function () {

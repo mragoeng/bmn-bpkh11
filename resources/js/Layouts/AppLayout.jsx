@@ -1,6 +1,7 @@
 import { Link, usePage } from '@inertiajs/react';
 import { useEffect, useMemo, useState } from 'react';
 import { navigationSections } from '@/lib/navigation';
+import DarkModeToggle from '@/Components/DarkModeToggle';
 
 function Chevron({ open }) {
     return (
@@ -68,7 +69,7 @@ export default function AppLayout({ title, description, actions, children }) {
     const footerText = '@2026 aplikasi buatan humas bpkh wilayah 11 - agoeng wibouuo';
 
     return (
-        <div className="min-h-screen bg-[#F5F5F0] text-gray-900">
+        <div className="min-h-screen bg-[#F5F5F0] dark:bg-gray-900 text-gray-900">
             {sidebarOpen ? (
                 <>
                     <button type="button" aria-label="Tutup menu" onClick={() => setSidebarOpen(false)} className="fixed inset-0 z-40 bg-black/40 xl:hidden"/>
@@ -114,30 +115,32 @@ export default function AppLayout({ title, description, actions, children }) {
                             <p className="text-xs font-semibold uppercase tracking-[0.3em] text-accent">BMN-BPKH11</p>
                             <p className="mt-1 text-sm text-white/80">Arsip Pencatatan BBM</p>
                         </div>
+                        <DarkModeToggle />
                         <button type="button" onClick={() => setSidebarOpen(true)} className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-primary">Menu</button>
                     </div>
 
                     <main className="p-4 sm:p-6 lg:p-8">
-                        <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
-                            <div className="flex flex-col gap-4 border-b border-gray-200 pb-6 lg:flex-row lg:items-end lg:justify-between">
+                        <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 shadow-sm sm:p-6">
+                            <div className="flex flex-col gap-4 border-b border-gray-200 dark:border-gray-700 pb-6 lg:flex-row lg:items-end lg:justify-between">
                                 <div>
-                                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">Aplikasi Internal</p>
-                                    <h2 className="mt-2 text-2xl font-bold text-gray-900">{title}</h2>
-                                    {description ? <p className="mt-2 max-w-3xl text-sm leading-6 text-gray-500">{description}</p> : null}
+                                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">Aplikasi Internal</p>
+                                    <h2 className="mt-2 text-2xl font-bold text-gray-900 dark:text-gray-100">{title}</h2>
+                                    {description ? <p className="mt-2 max-w-3xl text-sm leading-6 text-gray-500 dark:text-gray-400">{description}</p> : null}
                                 </div>
                                 <div className="flex flex-col items-start gap-3 lg:items-end">
                                     {user ? (
-                                        <div className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-600 lg:w-auto">
-                                            Login sebagai <span className="font-semibold text-gray-900">{user.name}</span> ({user.username})
+                                        <div className="w-full rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 px-4 py-3 text-sm text-gray-600 dark:text-gray-300 lg:w-auto">
+                                            Login sebagai <span className="font-semibold text-gray-900 dark:text-gray-100">{user.name}</span> ({user.username})
                                         </div>
                                     ) : null}
+                                    <DarkModeToggle />
                                     {actions ? <div className="flex w-full shrink-0 flex-col gap-3 sm:flex-row sm:flex-wrap lg:w-auto lg:justify-end">{actions}</div> : null}
                                 </div>
                             </div>
                             <div className="pt-6">{children}</div>
-                            {flashMessage ? <div className="mt-6 rounded-lg border border-primary-pale bg-primary-pale/30 px-4 py-3 text-sm text-primary-dark">{flashMessage}</div> : null}
-                            {flashError ? <div className="mt-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">{flashError}</div> : null}
-                            <div className="mt-8 border-t border-gray-200 pt-5 text-center text-sm text-gray-400">{footerText}</div>
+                            {flashMessage ? <div className="mt-6 rounded-lg border border-primary-pale dark:border-green-700 bg-primary-pale/30 dark:bg-green-900/30 px-4 py-3 text-sm text-primary-dark dark:text-green-300">{flashMessage}</div> : null}
+                            {flashError ? <div className="mt-6 rounded-lg border border-red-200 dark:border-red-700 bg-red-50 dark:bg-red-900/30 px-4 py-3 text-sm text-red-800 dark:text-red-300">{flashError}</div> : null}
+                            <div className="mt-8 border-t border-gray-200 dark:border-gray-700 pt-5 text-center text-sm text-gray-400 dark:text-gray-600">{footerText}</div>
                         </div>
                     </main>
                 </div>

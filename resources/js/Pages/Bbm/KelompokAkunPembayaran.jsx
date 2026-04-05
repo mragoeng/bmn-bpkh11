@@ -90,14 +90,14 @@ export default function KelompokAkunPembayaran({ akunList }) {
             <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
                 <form
                     onSubmit={submit}
-                    className="rounded-xl border border-gray-200 bg-gray-50 p-5"
+                    className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 p-5"
                 >
                     <div className="mb-5 flex items-center justify-between">
                         <div>
-                            <p className="text-sm text-gray-500">
+                            <p className="text-sm text-gray-500 dark:text-gray-400">
                                 {editingId ? 'Edit Akun' : 'Tambah Akun'}
                             </p>
-                            <p className="mt-1 text-lg font-semibold text-gray-900">
+                            <p className="mt-1 text-lg font-semibold text-gray-900 dark:text-gray-100">
                                 Form kelompok akun pembayaran
                             </p>
                         </div>
@@ -105,7 +105,7 @@ export default function KelompokAkunPembayaran({ akunList }) {
                             <button
                                 type="button"
                                 onClick={cancelEdit}
-                                className="rounded-2xl border border-gray-300 px-3 py-2 text-sm text-gray-700"
+                                className="rounded-2xl border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm text-gray-700 dark:text-gray-200"
                             >
                                 Batal
                             </button>
@@ -116,7 +116,7 @@ export default function KelompokAkunPembayaran({ akunList }) {
                         <div>
                             <input
                                 type="number"
-                                className="w-full rounded-2xl border border-gray-300 px-4 py-3 text-sm"
+                                className="w-full rounded-2xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 px-4 py-3 text-sm"
                                 placeholder="Tahun"
                                 value={form.data.tahun}
                                 onChange={(event) =>
@@ -130,7 +130,7 @@ export default function KelompokAkunPembayaran({ akunList }) {
                         </div>
                         <div>
                             <select
-                                className="w-full rounded-2xl border border-gray-300 px-4 py-3 text-sm"
+                                className="w-full rounded-2xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 px-4 py-3 text-sm"
                                 value={form.data.jenis_kendaraan}
                                 onChange={(event) =>
                                     form.setData(
@@ -149,7 +149,7 @@ export default function KelompokAkunPembayaran({ akunList }) {
                         </div>
                         <div>
                             <input
-                                className="w-full rounded-2xl border border-gray-300 px-4 py-3 text-sm"
+                                className="w-full rounded-2xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 px-4 py-3 text-sm"
                                 placeholder="Kode akun"
                                 value={form.data.kode_akun}
                                 onChange={(event) =>
@@ -166,7 +166,7 @@ export default function KelompokAkunPembayaran({ akunList }) {
                         </div>
                         <div>
                             <input
-                                className="w-full rounded-2xl border border-gray-300 px-4 py-3 text-sm"
+                                className="w-full rounded-2xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 px-4 py-3 text-sm"
                                 placeholder="Nama akun"
                                 value={form.data.nama_akun}
                                 onChange={(event) =>
@@ -184,7 +184,7 @@ export default function KelompokAkunPembayaran({ akunList }) {
                         <div>
                             <textarea
                                 rows="4"
-                                className="w-full rounded-2xl border border-gray-300 px-4 py-3 text-sm"
+                                className="w-full rounded-2xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 px-4 py-3 text-sm"
                                 placeholder="Keterangan"
                                 value={form.data.keterangan}
                                 onChange={(event) =>
@@ -215,18 +215,18 @@ export default function KelompokAkunPembayaran({ akunList }) {
                 </form>
 
                 <div>
-                    <div className="mb-4 grid gap-4 md:grid-cols-4">
-                        <div className="rounded-xl border border-gray-200 bg-gray-50 p-5">
-                            <p className="text-sm text-gray-500">
+                    <div className="mb-4 grid gap-4 grid-cols-2 md:grid-cols-4">
+                        <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 p-5">
+                            <p className="text-sm text-gray-500 dark:text-gray-400">
                                 Total Akun
                             </p>
-                            <p className="mt-2 text-3xl font-semibold text-gray-900">
+                            <p className="mt-2 text-3xl font-semibold text-gray-900 dark:text-gray-100">
                                 {akunList.length}
                             </p>
                         </div>
-                        <div className="rounded-xl border border-gray-200 bg-gray-50 p-5 md:col-span-3">
+                        <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 p-5 col-span-2 md:col-span-3">
                             <input
-                                className="w-full rounded-2xl border border-gray-300 px-4 py-3 text-sm"
+                                className="w-full rounded-2xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 px-4 py-3 text-sm"
                                 placeholder="Cari tahun, jenis kendaraan, kode akun, atau nama akun"
                                 value={keyword}
                                 onChange={(event) =>
@@ -236,9 +236,10 @@ export default function KelompokAkunPembayaran({ akunList }) {
                         </div>
                     </div>
 
-                    <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
-                        <table className="min-w-full divide-y divide-stone-200 text-sm">
-                            <thead className="bg-gray-50 text-left text-gray-500">
+                    {/* Desktop Table */}
+                    <div className="hidden md:block overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+                        <table className="min-w-full divide-y divide-stone-200 dark:divide-gray-700 text-sm">
+                            <thead className="bg-gray-50 dark:bg-gray-700 text-left text-gray-500 dark:text-gray-400">
                                 <tr>
                                     <th className="px-5 py-4 font-medium">
                                         Tahun
@@ -260,26 +261,26 @@ export default function KelompokAkunPembayaran({ akunList }) {
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-stone-100">
+                            <tbody className="divide-y divide-stone-100 dark:divide-gray-700">
                                 {filteredAkun.length ? (
                                     filteredAkun.map((item) => (
-                                        <tr key={item.id}>
-                                            <td className="px-5 py-4 text-gray-600">
+                                        <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                                            <td className="px-5 py-4 text-gray-600 dark:text-gray-300">
                                                 {item.tahun}
                                             </td>
-                                            <td className="px-5 py-4 uppercase text-gray-600">
+                                            <td className="px-5 py-4 uppercase text-gray-600 dark:text-gray-300">
                                                 {item.jenis_kendaraan.replace(
                                                     '_',
                                                     ' ',
                                                 )}
                                             </td>
-                                            <td className="px-5 py-4 font-medium text-gray-900">
+                                            <td className="px-5 py-4 font-medium text-gray-900 dark:text-gray-100">
                                                 {item.kode_akun}
                                             </td>
-                                            <td className="px-5 py-4 text-gray-600">
+                                            <td className="px-5 py-4 text-gray-600 dark:text-gray-300">
                                                 {item.nama_akun}
                                             </td>
-                                            <td className="px-5 py-4 text-gray-600">
+                                            <td className="px-5 py-4 text-gray-600 dark:text-gray-300">
                                                 {item.keterangan || '-'}
                                             </td>
                                             <td className="px-5 py-4">
@@ -289,7 +290,7 @@ export default function KelompokAkunPembayaran({ akunList }) {
                                                         onClick={() =>
                                                             editAkun(item)
                                                         }
-                                                        className="rounded-xl border border-gray-300 px-3 py-2 text-xs text-gray-700"
+                                                        className="rounded-xl border border-gray-300 dark:border-gray-600 px-3 py-2 text-xs text-gray-700 dark:text-gray-200"
                                                     >
                                                         Edit
                                                     </button>
@@ -307,7 +308,7 @@ export default function KelompokAkunPembayaran({ akunList }) {
                                                                 },
                                                             )
                                                         }
-                                                        className="rounded-xl border border-rose-200 px-3 py-2 text-xs text-rose-700"
+                                                        className="rounded-xl border border-rose-200 dark:border-rose-700 px-3 py-2 text-xs text-rose-700 dark:text-rose-400"
                                                     >
                                                         Hapus
                                                     </button>
@@ -319,7 +320,7 @@ export default function KelompokAkunPembayaran({ akunList }) {
                                     <tr>
                                         <td
                                             colSpan="6"
-                                            className="px-5 py-8 text-center text-gray-500"
+                                            className="px-5 py-8 text-center text-gray-500 dark:text-gray-400"
                                         >
                                             Belum ada data akun pembayaran.
                                         </td>
@@ -327,6 +328,70 @@ export default function KelompokAkunPembayaran({ akunList }) {
                                 )}
                             </tbody>
                         </table>
+                    </div>
+
+                    {/* Mobile Cards */}
+                    <div className="space-y-3 md:hidden">
+                        {filteredAkun.length ? (
+                            filteredAkun.map((item) => (
+                                <div
+                                    key={item.id}
+                                    className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4"
+                                >
+                                    <div className="mb-3 flex items-start justify-between">
+                                        <div>
+                                            <p className="font-semibold text-gray-900 dark:text-gray-100">
+                                                {item.kode_akun}
+                                            </p>
+                                            <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">
+                                                {item.nama_akun}
+                                            </p>
+                                        </div>
+                                        <span className="rounded-full bg-primary-pale/50 dark:bg-primary-dark/30 px-2.5 py-0.5 text-xs font-medium text-primary-dark dark:text-green-300">
+                                            {item.tahun}
+                                        </span>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-2 text-sm">
+                                        <div>
+                                            <span className="text-gray-400 dark:text-gray-500">Jenis:</span>{' '}
+                                            <span className="uppercase text-gray-700 dark:text-gray-300">{item.jenis_kendaraan.replace('_', ' ')}</span>
+                                        </div>
+                                        <div>
+                                            <span className="text-gray-400 dark:text-gray-500">Keterangan:</span>{' '}
+                                            <span className="text-gray-700 dark:text-gray-300">{item.keterangan || '-'}</span>
+                                        </div>
+                                    </div>
+                                    <div className="mt-3 flex gap-2 border-t border-gray-100 dark:border-gray-700 pt-3">
+                                        <button
+                                            type="button"
+                                            onClick={() => editAkun(item)}
+                                            className="flex-1 rounded-xl border border-gray-300 dark:border-gray-600 px-3 py-2 text-xs font-medium text-gray-700 dark:text-gray-200 text-center"
+                                        >
+                                            ✏️ Edit
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                router.delete(
+                                                    route(
+                                                        'bbm.kelompok-akun-pembayaran.destroy',
+                                                        item.id,
+                                                    ),
+                                                    { preserveScroll: true },
+                                                )
+                                            }
+                                            className="flex-1 rounded-xl border border-rose-200 dark:border-rose-700 px-3 py-2 text-xs font-medium text-rose-700 dark:text-rose-400 text-center"
+                                        >
+                                            🗑️ Hapus
+                                        </button>
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <p className="py-8 text-center text-gray-500 dark:text-gray-400">
+                                Belum ada data akun pembayaran.
+                            </p>
+                        )}
                     </div>
                 </div>
             </div>

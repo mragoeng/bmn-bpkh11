@@ -68,18 +68,18 @@ export default function PengaturanPrint({ template, googleDocsSetup }) {
                     onSubmit={submit}
                     className="space-y-6"
                 >
-                    <div className="rounded-xl border border-gray-200 bg-gray-50 p-6">
-                        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gray-400">
+                    <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 p-6">
+                        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">
                             Template SPJ
                         </p>
 
                         <div className="mt-5 grid gap-5">
                             <label className="block">
-                                <span className="mb-2 block text-sm font-medium text-gray-700">
+                                <span className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-200">
                                     Nama Template
                                 </span>
                                 <input
-                                    className="w-full rounded-2xl border border-gray-300 px-4 py-3 text-sm"
+                                    className="w-full rounded-2xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 px-4 py-3 text-sm"
                                     value={form.data.nama_template}
                                     onChange={(event) =>
                                         form.setData(
@@ -102,11 +102,11 @@ export default function PengaturanPrint({ template, googleDocsSetup }) {
                             </div>
 
                             <label className="block">
-                                <span className="mb-2 block text-sm font-medium text-gray-700">
+                                <span className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-200">
                                     URL Google Docs
                                 </span>
                                 <input
-                                    className="w-full rounded-2xl border border-gray-300 px-4 py-3 text-sm"
+                                    className="w-full rounded-2xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 px-4 py-3 text-sm"
                                     value={form.data.google_docs_url}
                                     placeholder="https://docs.google.com/document/d/..."
                                     onChange={(event) =>
@@ -116,7 +116,7 @@ export default function PengaturanPrint({ template, googleDocsSetup }) {
                                         )
                                     }
                                 />
-                                <p className="mt-2 text-xs leading-5 text-gray-500">
+                                <p className="mt-2 text-xs leading-5 text-gray-500 dark:text-gray-400">
                                     Opsional. Cocok jika template SPJ masih
                                     disimpan di Google Docs.
                                 </p>
@@ -127,7 +127,7 @@ export default function PengaturanPrint({ template, googleDocsSetup }) {
                             </label>
 
                             {form.data.google_docs_url ? (
-                                <div className="rounded-2xl border border-gray-200 bg-white p-4 text-sm leading-6 text-gray-700">
+                                <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 text-sm leading-6 text-gray-700 dark:text-gray-200">
                                     Desain cetak mengikuti Google Docs di atas.
                                     Tidak ada template kedua yang perlu Anda
                                     isi. Sistem hanya menyimpan salinan sinkron
@@ -136,7 +136,7 @@ export default function PengaturanPrint({ template, googleDocsSetup }) {
                                 </div>
                             ) : (
                                 <label className="block">
-                                    <span className="mb-2 block text-sm font-medium text-gray-700">
+                                    <span className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-200">
                                         Template Manual
                                     </span>
                                     <textarea
@@ -151,7 +151,7 @@ export default function PengaturanPrint({ template, googleDocsSetup }) {
                                             )
                                         }
                                     />
-                                    <p className="mt-2 text-xs leading-5 text-gray-500">
+                                    <p className="mt-2 text-xs leading-5 text-gray-500 dark:text-gray-400">
                                         Dipakai hanya jika Anda tidak memakai
                                         Google Docs sebagai template utama.
                                     </p>
@@ -163,12 +163,12 @@ export default function PengaturanPrint({ template, googleDocsSetup }) {
                             )}
 
                             <label className="block">
-                                <span className="mb-2 block text-sm font-medium text-gray-700">
+                                <span className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-200">
                                     Catatan
                                 </span>
                                 <textarea
                                     rows="5"
-                                    className="w-full rounded-2xl border border-gray-300 px-4 py-3 text-sm"
+                                    className="w-full rounded-2xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 px-4 py-3 text-sm"
                                     placeholder="Catatan singkat untuk admin."
                                     value={form.data.keterangan}
                                     onChange={(event) =>
@@ -188,15 +188,15 @@ export default function PengaturanPrint({ template, googleDocsSetup }) {
                 </form>
 
                 <div className="space-y-6">
-                    <div className="rounded-xl border border-gray-200 bg-white p-6">
-                        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gray-400">
+                    <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6">
+                        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500 dark:text-gray-500">
                             Akses Google
                         </p>
 
-                        <div className="mt-4 rounded-2xl bg-gray-50 p-4 text-sm leading-7 text-gray-700">
+                        <div className="mt-4 rounded-2xl bg-gray-50 dark:bg-gray-700 p-4 text-sm leading-7 text-gray-700 dark:text-gray-200">
                             <div>
                                 Mode aktif:{' '}
-                                <span className="font-semibold text-gray-900">
+                                <span className="font-semibold text-gray-900 dark:text-gray-100">
                                     {googleDocsSetup.auth_mode.label}
                                 </span>
                             </div>
@@ -226,7 +226,7 @@ export default function PengaturanPrint({ template, googleDocsSetup }) {
                                 type="button"
                                 onClick={testGoogleDocsConnection}
                                 disabled={isTestingConnection}
-                                className="rounded-2xl border border-gray-300 px-4 py-3 text-sm font-medium text-gray-700 disabled:opacity-60"
+                                className="rounded-2xl border border-gray-300 px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-200 disabled:opacity-60"
                             >
                                 {isTestingConnection
                                     ? 'Mengecek Template...'
@@ -247,7 +247,7 @@ export default function PengaturanPrint({ template, googleDocsSetup }) {
                         ) : null}
 
                         {connectionResult ? (
-                            <div className="mt-4 rounded-2xl border border-primary-pale bg-primary-pale/30 p-4 text-sm leading-7 text-primary-dark">
+                            <div className="mt-4 rounded-2xl border border-primary-pale dark:border-primary-dark bg-primary-pale/30 dark:bg-primary-dark/30 p-4 text-sm leading-7 text-primary-dark dark:text-green-300">
                                 <div>{connectionResult.message}</div>
                                 <div className="mt-2">
                                     Template: {connectionResult.template?.title}
@@ -269,11 +269,11 @@ export default function PengaturanPrint({ template, googleDocsSetup }) {
                         ) : null}
                     </div>
 
-                    <div className="rounded-xl border border-gray-200 bg-white p-6">
-                        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gray-400">
+                    <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6">
+                        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500 dark:text-gray-500">
                             Placeholder Tersedia
                         </p>
-                        <p className="mt-3 text-sm leading-6 text-gray-600">
+                        <p className="mt-3 text-sm leading-6 text-gray-600 dark:text-gray-300">
                             Gunakan placeholder ini di Google Docs atau template
                             manual agar nilainya terisi otomatis.
                         </p>
@@ -290,7 +290,7 @@ export default function PengaturanPrint({ template, googleDocsSetup }) {
                     </div>
 
                     <div className="rounded-xl border border-gray-200 bg-primary p-6 text-stone-100">
-                        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gray-400">
+                        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">
                             Alur Baru
                         </p>
                         <div className="mt-4 space-y-3 text-sm leading-6">

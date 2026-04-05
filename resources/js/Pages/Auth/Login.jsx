@@ -68,32 +68,32 @@ export default function Login({ status, turnstile }) {
             <Head title="Login" />
             <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.3em] text-accent">Akses Internal</p>
-                <h1 className="mt-3 text-2xl font-bold text-gray-900">Masuk ke BMN-BPKH11</h1>
-                <p className="mt-3 text-sm leading-6 text-gray-500">Gunakan akun aplikasi untuk mengelola database, transaksi BBM, laporan, dan SPJ.</p>
+                <h1 className="mt-3 text-2xl font-bold text-gray-900 dark:text-gray-100">Masuk ke BMN-BPKH11</h1>
+                <p className="mt-3 text-sm leading-6 text-gray-500 dark:text-gray-400">Gunakan akun aplikasi untuk mengelola database, transaksi BBM, laporan, dan SPJ.</p>
             </div>
-            {status ? <div className="mt-6 rounded-lg border border-primary-pale bg-primary-pale/30 px-4 py-3 text-sm font-medium text-primary-dark">{status}</div> : null}
+            {status ? <div className="mt-6 rounded-lg border border-primary-pale dark:border-primary-dark bg-primary-pale/30 dark:bg-primary-dark/30 px-4 py-3 text-sm font-medium text-primary-dark dark:text-green-300">{status}</div> : null}
             <form onSubmit={submit} className="mt-8 space-y-5">
                 <div>
-                    <InputLabel htmlFor="username" value="Username" className="text-gray-700"/>
+                    <InputLabel htmlFor="username" value="Username" className="text-gray-700 dark:text-gray-200"/>
                     <TextInput id="username" type="text" name="username" value={data.username}
-                        className="mt-2 block w-full rounded-lg border-gray-300" autoComplete="username" isFocused={true}
+                        className="mt-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100" autoComplete="username" isFocused={true}
                         onChange={(event) => setData('username', event.target.value)}/>
                     <InputError message={errors.username} className="mt-2"/>
                 </div>
                 <div>
-                    <InputLabel htmlFor="password" value="Password" className="text-gray-700"/>
+                    <InputLabel htmlFor="password" value="Password" className="text-gray-700 dark:text-gray-200"/>
                     <TextInput id="password" type="password" name="password" value={data.password}
-                        className="mt-2 block w-full rounded-lg border-gray-300" autoComplete="current-password"
+                        className="mt-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100" autoComplete="current-password"
                         onChange={(event) => setData('password', event.target.value)}/>
                     <InputError message={errors.password} className="mt-2"/>
                 </div>
-                <label className="flex items-center gap-3 rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
+                <label className="flex items-center gap-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 px-4 py-3">
                     <Checkbox name="remember" checked={data.remember} onChange={(event) => setData('remember', event.target.checked)}/>
-                    <span className="text-sm text-gray-700">Tetap masuk di perangkat ini</span>
+                    <span className="text-sm text-gray-700 dark:text-gray-200">Tetap masuk di perangkat ini</span>
                 </label>
                 {turnstile?.enabled ? (
-                    <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
-                        <p className="mb-3 text-sm font-medium text-gray-700">Verifikasi keamanan</p>
+                    <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 p-4">
+                        <p className="mb-3 text-sm font-medium text-gray-700 dark:text-gray-200">Verifikasi keamanan</p>
                         <div ref={widgetRef}/>
                         <InputError message={errors.cf_turnstile_response} className="mt-2"/>
                     </div>

@@ -46,7 +46,7 @@ export default function Riwayat({ transactions }) {
                     <button
                         type="button"
                         onClick={() => setShowImport((value) => !value)}
-                        className="rounded-2xl border border-gray-300 px-4 py-3 text-sm font-medium text-gray-700"
+                        className="rounded-2xl border border-gray-300 dark:border-gray-600 px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-200"
                     >
                         {showImport ? 'Tutup Import' : 'Import Riwayat'}
                     </button>
@@ -87,21 +87,21 @@ export default function Riwayat({ transactions }) {
                 ) : null}
 
                 {actionError ? (
-                    <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
+                    <div className="rounded-2xl border border-rose-200 dark:border-rose-800 bg-rose-50 dark:bg-rose-900/30 px-4 py-3 text-sm text-rose-800 dark:text-rose-300">
                         {actionError}
                     </div>
                 ) : null}
 
                 <div className="grid gap-4 sm:grid-cols-3">
-                    <div className="rounded-xl border border-gray-200 bg-gray-50 p-5">
-                        <p className="text-sm text-gray-500">Total transaksi</p>
-                        <p className="mt-2 text-2xl font-semibold text-gray-900">
+                    <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 p-5">
+                        <p className="text-sm text-gray-500 dark:text-gray-400">Total transaksi</p>
+                        <p className="mt-2 text-2xl font-semibold text-gray-900 dark:text-gray-100">
                             {total}
                         </p>
                     </div>
-                    <div className="rounded-xl border border-gray-200 bg-gray-50 p-5">
-                        <p className="text-sm text-gray-500">Halaman aktif</p>
-                        <p className="mt-2 text-2xl font-semibold text-gray-900">
+                    <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 p-5">
+                        <p className="text-sm text-gray-500 dark:text-gray-400">Halaman aktif</p>
+                        <p className="mt-2 text-2xl font-semibold text-gray-900 dark:text-gray-100">
                             {currentPage} / {lastPage}
                         </p>
                     </div>
@@ -119,17 +119,17 @@ export default function Riwayat({ transactions }) {
                         items.map((item) => (
                             <article
                                 key={item.id}
-                                className="rounded-xl border border-gray-200 bg-white p-5"
+                                className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5"
                             >
                                 <div className="flex items-start justify-between gap-4">
                                     <div>
-                                        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">
+                                        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">
                                             {item.tanggal}
                                         </p>
-                                        <h3 className="mt-2 text-lg font-semibold text-gray-900">
+                                        <h3 className="mt-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
                                             {item.nomor_polisi}
                                         </h3>
-                                        <p className="mt-1 text-sm text-gray-600">
+                                        <p className="mt-1 text-sm text-gray-600 dark:text-gray-300 dark:text-gray-300">
                                             {item.kendaraan}
                                         </p>
                                     </div>
@@ -138,28 +138,28 @@ export default function Riwayat({ transactions }) {
                                     </div>
                                 </div>
 
-                                <dl className="mt-4 grid gap-3 text-sm text-gray-600 sm:grid-cols-2">
+                                <dl className="mt-4 grid gap-3 text-sm text-gray-600 dark:text-gray-300 sm:grid-cols-2">
                                     <div>
                                         <dt className="text-gray-400">Pegawai</dt>
-                                        <dd className="mt-1 font-medium text-gray-900">
+                                        <dd className="mt-1 font-medium text-gray-900 dark:text-gray-100">
                                             {item.pegawai}
                                         </dd>
                                     </div>
                                     <div>
                                         <dt className="text-gray-400">Liter</dt>
-                                        <dd className="mt-1 font-medium text-gray-900">
+                                        <dd className="mt-1 font-medium text-gray-900 dark:text-gray-100">
                                             {item.liter}
                                         </dd>
                                     </div>
                                     <div>
                                         <dt className="text-gray-400">Total</dt>
-                                        <dd className="mt-1 font-medium text-gray-900">
+                                        <dd className="mt-1 font-medium text-gray-900 dark:text-gray-100">
                                             {item.total}
                                         </dd>
                                     </div>
                                     <div>
                                         <dt className="text-gray-400">Nota</dt>
-                                        <dd className="mt-1 font-medium text-gray-900">
+                                        <dd className="mt-1 font-medium text-gray-900 dark:text-gray-100">
                                             {item.nomor_nota || '-'}
                                         </dd>
                                     </div>
@@ -192,16 +192,16 @@ export default function Riwayat({ transactions }) {
                             </article>
                         ))
                     ) : (
-                        <div className="rounded-xl border border-dashed border-gray-300 bg-gray-50 p-8 text-center text-sm text-gray-500">
+                        <div className="rounded-xl border border-dashed border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 p-8 text-center text-sm text-gray-500">
                             Belum ada transaksi BBM yang tercatat.
                         </div>
                     )}
                 </div>
 
-                <div className="hidden overflow-hidden rounded-xl border border-gray-200 bg-white lg:block">
+                <div className="hidden overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 lg:block">
                     <div className="overflow-x-auto">
                         <table className="w-full min-w-[820px] divide-y divide-stone-200 text-sm">
-                            <thead className="bg-gray-50 text-left text-gray-500">
+                            <thead className="bg-gray-50 dark:bg-gray-700 text-left text-gray-500 dark:text-gray-400">
                                 <tr>
                                     <th className="px-5 py-4 font-medium">Tanggal</th>
                                     <th className="px-5 py-4 font-medium">Pegawai</th>
@@ -217,25 +217,25 @@ export default function Riwayat({ transactions }) {
                                 {items.length ? (
                                     items.map((item) => (
                                         <tr key={item.id}>
-                                            <td className="px-5 py-4 text-gray-600">
+                                            <td className="px-5 py-4 text-gray-600 dark:text-gray-300">
                                                 {item.tanggal}
                                             </td>
-                                            <td className="px-5 py-4 font-medium text-gray-900">
+                                            <td className="px-5 py-4 font-medium text-gray-900 dark:text-gray-100">
                                                 {item.pegawai}
                                             </td>
-                                            <td className="px-5 py-4 text-gray-600">
+                                            <td className="px-5 py-4 text-gray-600 dark:text-gray-300">
                                                 {item.kendaraan}
                                             </td>
-                                            <td className="px-5 py-4 text-gray-600">
+                                            <td className="px-5 py-4 text-gray-600 dark:text-gray-300">
                                                 {item.nomor_polisi}
                                             </td>
-                                            <td className="px-5 py-4 text-gray-600">
+                                            <td className="px-5 py-4 text-gray-600 dark:text-gray-300">
                                                 {item.jenis_bbm}
                                             </td>
-                                            <td className="px-5 py-4 text-gray-600">
+                                            <td className="px-5 py-4 text-gray-600 dark:text-gray-300">
                                                 {item.liter}
                                             </td>
-                                            <td className="px-5 py-4 font-medium text-gray-900">
+                                            <td className="px-5 py-4 font-medium text-gray-900 dark:text-gray-100">
                                                 {item.total}
                                             </td>
                                             <td className="px-5 py-4">
@@ -250,7 +250,7 @@ export default function Riwayat({ transactions }) {
                                                     </a>
                                                     <Link
                                                         href={item.edit_url}
-                                                        className="rounded-xl border border-gray-300 px-3 py-2 text-xs font-medium text-gray-700"
+                                                        className="rounded-xl border border-gray-300 dark:border-gray-600 px-3 py-2 text-xs font-medium text-gray-700 dark:text-gray-200"
                                                     >
                                                         Edit
                                                     </Link>
@@ -270,7 +270,7 @@ export default function Riwayat({ transactions }) {
                                     <tr>
                                         <td
                                             colSpan="8"
-                                            className="px-5 py-8 text-center text-gray-500"
+                                            className="px-5 py-8 text-center text-gray-500 dark:text-gray-400"
                                         >
                                             Belum ada transaksi BBM yang tercatat.
                                         </td>
@@ -282,7 +282,7 @@ export default function Riwayat({ transactions }) {
                 </div>
 
                 {items.length ? (
-                    <div className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-600">
+                    <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 px-4 py-3 text-sm text-gray-600 dark:text-gray-300">
                         Menampilkan {from}&ndash;{to} dari {total} transaksi.
                     </div>
                 ) : null}
