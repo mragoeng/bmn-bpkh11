@@ -1,9 +1,12 @@
 <?php
 
+use App\Http\Controllers\AlatController;
 use App\Http\Controllers\KelompokAkunPembayaranController;
 use App\Http\Controllers\KendaraanController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\PegawaiController;
+use App\Http\Controllers\PeminjamanAlatController;
+use App\Http\Controllers\PropertiController;
 use App\Http\Controllers\PrintSettingController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SettingsUserController;
@@ -100,33 +103,40 @@ Route::middleware('auth')->group(function () use ($renderDashboard, $formatRupia
 
     Route::prefix('database')->name('database.')->group(function () {
         Route::get('/pegawai', [PegawaiController::class, 'index'])->name('pegawai');
-        Route::post('/pegawai', [PegawaiController::class, 'store'])->name('pegawai.store');
-        Route::post('/pegawai/import', [PegawaiController::class, 'import'])->name('pegawai.import');
+        Route::post('/pegawai', [PegawaiController::class, 'store'])->middleware('throttle:web')->name('pegawai.store');
+        Route::post('/pegawai/import', [PegawaiController::class, 'import'])->middleware('throttle:web')->name('pegawai.import');
         Route::get('/pegawai/template', [PegawaiController::class, 'downloadTemplate'])->name('pegawai.template');
-        Route::put('/pegawai/{pegawai}', [PegawaiController::class, 'update'])->name('pegawai.update');
-        Route::delete('/pegawai/{pegawai}', [PegawaiController::class, 'destroy'])->name('pegawai.destroy');
+        Route::put('/pegawai/{pegawai}', [PegawaiController::class, 'update'])->middleware('throttle:web')->name('pegawai.update');
+        Route::delete('/pegawai/{pegawai}', [PegawaiController::class, 'destroy'])->middleware('throttle:web')->name('pegawai.destroy');
 
         Route::get('/kendaraan', [KendaraanController::class, 'index'])->name('kendaraan');
-        Route::post('/kendaraan', [KendaraanController::class, 'store'])->name('kendaraan.store');
-        Route::post('/kendaraan/import', [KendaraanController::class, 'import'])->name('kendaraan.import');
+        Route::post('/kendaraan', [KendaraanController::class, 'store'])->middleware('throttle:web')->name('kendaraan.store');
+        Route::post('/kendaraan/import', [KendaraanController::class, 'import'])->middleware('throttle:web')->name('kendaraan.import');
         Route::get('/kendaraan/template', [KendaraanController::class, 'downloadTemplate'])->name('kendaraan.template');
-        Route::put('/kendaraan/{kendaraan}', [KendaraanController::class, 'update'])->name('kendaraan.update');
-        Route::delete('/kendaraan/{kendaraan}', [KendaraanController::class, 'destroy'])->name('kendaraan.destroy');
+        Route::put('/kendaraan/{kendaraan}', [KendaraanController::class, 'update'])->middleware('throttle:web')->name('kendaraan.update');
+        Route::delete('/kendaraan/{kendaraan}', [KendaraanController::class, 'destroy'])->middleware('throttle:web')->name('kendaraan.destroy');
+
+        Route::resource('alat', AlatController::class);
+        Route::resource('properti', PropertiController::class);
+    });
+
+    Route::prefix('peminjaman-alat')->name('peminjaman-alat.')->group(function () {
+        Route::resource('/', PeminjamanAlatController::class)->parameter('', 'peminjaman_alat');
     });
 
     Route::prefix('bbm')->name('bbm.')->group(function () use ($formatRupiah) {
         Route::get('/kelompok-akun-pembayaran', [KelompokAkunPembayaranController::class, 'index'])->name('kelompok-akun-pembayaran');
-        Route::post('/kelompok-akun-pembayaran', [KelompokAkunPembayaranController::class, 'store'])->name('kelompok-akun-pembayaran.store');
-        Route::put('/kelompok-akun-pembayaran/{akun}', [KelompokAkunPembayaranController::class, 'update'])->name('kelompok-akun-pembayaran.update');
-        Route::delete('/kelompok-akun-pembayaran/{akun}', [KelompokAkunPembayaranController::class, 'destroy'])->name('kelompok-akun-pembayaran.destroy');
+        Route::post('/kelompok-akun-pembayaran', [KelompokAkunPembayaranController::class, 'store'])->middleware('throttle:web')->name('kelompok-akun-pembayaran.store');
+        Route::put('/kelompok-akun-pembayaran/{akun}', [KelompokAkunPembayaranController::class, 'update'])->middleware('throttle:web')->name('kelompok-akun-pembayaran.update');
+        Route::delete('/kelompok-akun-pembayaran/{akun}', [KelompokAkunPembayaranController::class, 'destroy'])->middleware('throttle:web')->name('kelompok-akun-pembayaran.destroy');
 
         Route::get('/pencatatan', [TransaksiBbmController::class, 'create'])->name('pencatatan');
-        Route::post('/pencatatan', [TransaksiBbmController::class, 'store'])->name('pencatatan.store');
-        Route::post('/riwayat/import', [TransaksiBbmController::class, 'import'])->name('riwayat.import');
+        Route::post('/pencatatan', [TransaksiBbmController::class, 'store'])->middleware('throttle:web')->name('pencatatan.store');
+        Route::post('/riwayat/import', [TransaksiBbmController::class, 'import'])->middleware('throttle:web')->name('riwayat.import');
         Route::get('/riwayat/template', [TransaksiBbmController::class, 'downloadTemplate'])->name('riwayat.template');
         Route::get('/pencatatan/{transaksi}/edit', [TransaksiBbmController::class, 'edit'])->name('pencatatan.edit');
-        Route::put('/pencatatan/{transaksi}', [TransaksiBbmController::class, 'update'])->name('pencatatan.update');
-        Route::delete('/pencatatan/{transaksi}', [TransaksiBbmController::class, 'destroy'])->name('pencatatan.destroy');
+        Route::put('/pencatatan/{transaksi}', [TransaksiBbmController::class, 'update'])->middleware('throttle:web')->name('pencatatan.update');
+        Route::delete('/pencatatan/{transaksi}', [TransaksiBbmController::class, 'destroy'])->middleware('throttle:web')->name('pencatatan.destroy');
         Route::get('/riwayat/{transaksi}/spj-preview', [TransaksiBbmController::class, 'previewSpj'])->name('riwayat.spj-preview');
         Route::get('/riwayat/{transaksi}/spj-print', [TransaksiBbmController::class, 'printSpj'])->name('riwayat.spj-print');
         Route::get('/riwayat/{transaksi}/spj-pdf', [TransaksiBbmController::class, 'downloadPdf'])->name('riwayat.spj-pdf');
@@ -139,20 +149,20 @@ Route::middleware('auth')->group(function () use ($renderDashboard, $formatRupia
 
     Route::prefix('settings')->name('settings.')->group(function () {
         Route::get('/pengaturan-user', [SettingsUserController::class, 'index'])->name('pengaturan-user');
-        Route::post('/pengaturan-user', [SettingsUserController::class, 'store'])->name('pengaturan-user.store');
-        Route::put('/pengaturan-user/{user}', [SettingsUserController::class, 'update'])->name('pengaturan-user.update');
-        Route::delete('/pengaturan-user/{user}', [SettingsUserController::class, 'destroy'])->name('pengaturan-user.destroy');
+        Route::post('/pengaturan-user', [SettingsUserController::class, 'store'])->middleware('throttle:web')->name('pengaturan-user.store');
+        Route::put('/pengaturan-user/{user}', [SettingsUserController::class, 'update'])->middleware('throttle:web')->name('pengaturan-user.update');
+        Route::delete('/pengaturan-user/{user}', [SettingsUserController::class, 'destroy'])->middleware('throttle:web')->name('pengaturan-user.destroy');
 
         Route::get('/pengaturan-print', [PrintSettingController::class, 'edit'])->name('pengaturan-print');
-        Route::post('/pengaturan-print', [PrintSettingController::class, 'update'])->name('pengaturan-print.update');
-        Route::post('/pengaturan-print/test-google-docs', [PrintSettingController::class, 'testConnection'])->name('pengaturan-print.test-google-docs');
+        Route::post('/pengaturan-print', [PrintSettingController::class, 'update'])->middleware('throttle:web')->name('pengaturan-print.update');
+        Route::post('/pengaturan-print/test-google-docs', [PrintSettingController::class, 'testConnection'])->middleware('throttle:web')->name('pengaturan-print.test-google-docs');
     });
 });
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::patch('/profile', [ProfileController::class, 'update'])->middleware('throttle:web')->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->middleware('throttle:web')->name('profile.destroy');
 });
 
 require __DIR__.'/auth.php';

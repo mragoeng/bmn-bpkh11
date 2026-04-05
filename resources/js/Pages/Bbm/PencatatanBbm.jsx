@@ -253,17 +253,18 @@ export default function PencatatanBbm({
                             </Field>
                             <Field label="Jenis BBM">
                                 <>
-                                    <Input
-                                        type="text"
-                                        placeholder="Contoh: Pertalite"
+                                    <select
+                                        className="w-full rounded-2xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 px-4 py-3 text-sm"
                                         value={form.data.jenis_bbm}
-                                        onChange={(event) =>
-                                            form.setData(
-                                                'jenis_bbm',
-                                                event.target.value,
-                                            )
-                                        }
-                                    />
+                                        onChange={(event) => form.setData('jenis_bbm', event.target.value)}
+                                    >
+                                        <option value="">Pilih BBM</option>
+                                        <option value="Pertamax">Pertamax</option>
+                                        <option value="Pertamax Turbo">Pertamax Turbo</option>
+                                        <option value="Dexlite">Dexlite</option>
+                                        <option value="Pertamina Dex">Pertamina Dex</option>
+                                        <option value="Solar">Solar</option>
+                                    </select>
                                     <InputError
                                         className="mt-2"
                                         message={form.errors.jenis_bbm}

@@ -20,6 +20,16 @@ export const navigationSections = [
                 href: '/database/kendaraan',
                 routeName: 'database.kendaraan',
             },
+            {
+                title: 'Alat Ukur',
+                href: '/database/alat',
+                routeName: 'database.alat',
+            },
+            {
+                title: 'Properti',
+                href: '/database/properti',
+                routeName: 'database.properti.index',
+            },
         ],
     },
     {
@@ -32,7 +42,7 @@ export const navigationSections = [
                 routeName: 'bbm.kelompok-akun-pembayaran',
             },
             {
-                title: 'Pencatatan BBM',
+                title: 'Pencatatan',
                 href: '/bbm/pencatatan',
                 routeName: 'bbm.pencatatan',
             },
@@ -45,6 +55,17 @@ export const navigationSections = [
                 title: 'Laporan',
                 href: '/bbm/laporan',
                 routeName: 'bbm.laporan',
+            },
+        ],
+    },
+    {
+        key: 'peminjaman',
+        title: 'Peminjaman',
+        items: [
+            {
+                title: 'Peminjaman Alat',
+                href: '/peminjaman-alat',
+                routeName: 'peminjaman-alat.index',
             },
         ],
     },

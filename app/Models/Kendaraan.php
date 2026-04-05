@@ -15,12 +15,21 @@ class Kendaraan extends Model
 
     protected $fillable = [
         'kode_kendaraan',
+        'kode_barang',
+        'nup',
+        'nama_barang',
         'nomor_polisi',
         'merk_tipe',
         'jenis_kendaraan',
         'tahun',
         'jenis_bbm_default',
         'pegawai_id',
+        'kondisi',
+        'status_bmn',
+        'nilai_perolehan',
+        'kode_register',
+        'pengguna',
+        'foto_url',
         'keterangan',
     ];
 
