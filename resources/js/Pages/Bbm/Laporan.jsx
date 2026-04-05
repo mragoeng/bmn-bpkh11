@@ -1,79 +1,307 @@
 import AppLayout from '@/Layouts/AppLayout';
-import { Head } from '@inertiajs/react';
+import { Head, router, Link } from '@inertiajs/react';
+import { useState, useMemo } from 'react';
 
-export default function Laporan({ summary, rekap }) {
+export default function Laporan({ summary, perKendaraan, perPegawai, perBbm, trendBulanan, filters, tahunTersedia }) {
+    const [periode, setPeriode] = useState(filters.periode);
+    const [tahun, setTahun] = useState(filters.tahun);
+    const [triwulan, setTriwulan] = useState(filters.triwulan);
+    const [bulan, setBulan] = useState(filters.bulan);
+    const [activeTab, setActiveTab] = useState('kendaraan');
+
+    const bulanNama = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+
+    const applyFilter = () => {
+        const params = new URLSearchParams({ periode, tahun, triwulan: String(triwulan), bulan: String(bulan) });
+        window.location.href = `${route('bbm.laporan')}?${params.toString()}`;
+    };
+
+    const printPdf = () => {
+        const params = new URLSearchParams({ periode, tahun, triwulan, bulan });
+        window.open(`/bbm/laporan/pdf?${params.toString()}`, '_blank');
+    };
+
+    const maxNominal = useMemo(() => Math.max(...trendBulanan.map(t => t.nominal), 1), [trendBulanan]);
+
     return (
         <AppLayout
             title="Laporan BBM"
-            description="Ringkasan transaksi BBM per periode yang bisa dikembangkan menjadi rekap bulanan, export, dan cetak."
+            description="Ringkasan dan rekap pemakaian BBM per periode"
+            actions={
+                <button
+                    onClick={printPdf}
+                    className="rounded-2xl bg-primary px-4 py-3 text-sm font-medium text-white hover:bg-primary-dark"
+                >
+                    📄 Cetak PDF
+                </button>
+            }
         >
             <Head title="Laporan BBM" />
 
-            <div className="mb-6 grid gap-4 lg:grid-cols-4">
-                <div className="rounded-xl border border-gray-200 bg-gray-50 p-5">
-                    <p className="text-sm text-gray-500">Periode</p>
-                    <p className="mt-2 text-lg font-semibold text-gray-900">
-                        {summary.periode}
-                    </p>
-                </div>
-                <div className="rounded-xl border border-gray-200 bg-gray-50 p-5">
-                    <p className="text-sm text-gray-500">Total Transaksi</p>
-                    <p className="mt-2 text-3xl font-semibold text-gray-900">
-                        {summary.total_transaksi}
-                    </p>
-                </div>
-                <div className="rounded-xl border border-gray-200 bg-gray-50 p-5">
-                    <p className="text-sm text-gray-500">Total Liter</p>
-                    <p className="mt-2 text-3xl font-semibold text-gray-900">
-                        {summary.total_liter}
-                    </p>
-                </div>
-                <div className="rounded-xl border border-gray-200 bg-gray-50 p-5">
-                    <p className="text-sm text-gray-500">Total Nominal</p>
-                    <p className="mt-2 text-2xl font-semibold text-gray-900">
-                        {summary.total_nominal}
-                    </p>
-                </div>
-            </div>
-
-            <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
-                <table className="min-w-full divide-y divide-stone-200 text-sm">
-                    <thead className="bg-gray-50 text-left text-gray-500">
-                        <tr>
-                            <th className="px-5 py-4 font-medium">Kategori</th>
-                            <th className="px-5 py-4 font-medium">Total Liter</th>
-                            <th className="px-5 py-4 font-medium">
-                                Total Nominal
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-stone-100">
-                        {rekap.length ? (
-                            rekap.map((item) => (
-                                <tr key={item.kategori}>
-                                    <td className="px-5 py-4 font-medium text-gray-900">
-                                        {item.kategori}
-                                    </td>
-                                    <td className="px-5 py-4 text-gray-600">
-                                        {item.liter}
-                                    </td>
-                                    <td className="px-5 py-4 text-gray-600">
-                                        {item.nominal}
-                                    </td>
-                                </tr>
-                            ))
-                        ) : (
-                            <tr>
-                                <td
-                                    colSpan="3"
-                                    className="px-5 py-8 text-center text-gray-500"
-                                >
-                                    Belum ada data transaksi untuk direkap.
-                                </td>
-                            </tr>
+            <div className="space-y-6">
+                {/* Filter Bar */}
+                <div className="rounded-xl border border-gray-200 bg-white p-4">
+                    <div className="flex flex-wrap items-end gap-3">
+                        <div>
+                            <label className="mb-1 block text-xs font-medium text-gray-500">Periode</label>
+                            <select value={periode} onChange={e => setPeriode(e.target.value)}
+                                className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary">
+                                <option value="tahun">Tahunan</option>
+                                <option value="triwulan">Triwulan</option>
+                                <option value="bulan">Bulanan</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label className="mb-1 block text-xs font-medium text-gray-500">Tahun</label>
+                            <select value={tahun} onChange={e => setTahun(parseInt(e.target.value))}
+                                className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary">
+                                {tahunTersedia.map(t => <option key={t} value={t}>{t}</option>)}
+                            </select>
+                        </div>
+                        {periode === 'triwulan' && (
+                            <div>
+                                <label className="mb-1 block text-xs font-medium text-gray-500">Triwulan</label>
+                                <select value={triwulan} onChange={e => setTriwulan(parseInt(e.target.value))}
+                                    className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary">
+                                    <option value={1}>Triwulan I (Jan-Mar)</option>
+                                    <option value={2}>Triwulan II (Apr-Jun)</option>
+                                    <option value={3}>Triwulan III (Jul-Sep)</option>
+                                    <option value={4}>Triwulan IV (Okt-Des)</option>
+                                </select>
+                            </div>
                         )}
-                    </tbody>
-                </table>
+                        {periode === 'bulan' && (
+                            <div>
+                                <label className="mb-1 block text-xs font-medium text-gray-500">Bulan</label>
+                                <select value={bulan} onChange={e => setBulan(parseInt(e.target.value))}
+                                    className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary">
+                                    {bulanNama.map((b, i) => <option key={i} value={i+1}>{b}</option>)}
+                            </select>
+                            </div>
+                        )}
+                        <button onClick={applyFilter}
+                            className="rounded-2xl bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-dark">
+                            Terapkan
+                        </button>
+                    </div>
+                </div>
+
+                {/* Summary Cards */}
+                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                    <div className="rounded-xl border border-gray-200 bg-primary-pale/30 p-5">
+                        <p className="text-sm text-primary">Periode</p>
+                        <p className="mt-2 text-lg font-bold text-primary-dark">{summary.periode}</p>
+                    </div>
+                    <div className="rounded-xl border border-gray-200 bg-primary-pale/30 p-5">
+                        <p className="text-sm text-primary">Total Transaksi</p>
+                        <p className="mt-2 text-3xl font-bold text-primary-dark">{summary.total_transaksi}</p>
+                    </div>
+                    <div className="rounded-xl border border-gray-200 bg-primary-pale/30 p-5">
+                        <p className="text-sm text-primary">Total Liter</p>
+                        <p className="mt-2 text-3xl font-bold text-primary-dark">{summary.total_liter}</p>
+                    </div>
+                    <div className="rounded-xl border border-gray-200 bg-primary-pale/30 p-5">
+                        <p className="text-sm text-primary">Total Nominal</p>
+                        <p className="mt-2 text-xl font-bold text-primary-dark">{summary.total_nominal}</p>
+                    </div>
+                </div>
+
+                {/* Trend Chart */}
+                {periode === 'tahun' && (
+                    <div className="rounded-xl border border-gray-200 bg-white p-5">
+                        <h3 className="mb-4 text-sm font-semibold text-gray-700">Tren Bulanan {tahun}</h3>
+                        <div className="flex items-end gap-1" style={{ height: 120 }}>
+                            {trendBulanan.map((t, i) => (
+                                <div key={i} className="flex flex-1 flex-col items-center">
+                                    <div
+                                        className="w-full rounded-t bg-primary transition-all hover:bg-primary-dark"
+                                        style={{ height: `${Math.max((t.nominal / maxNominal) * 100, 2)}%` }}
+                                        title={`${t.bulan}: Rp ${t.nominal.toLocaleString('id-ID')} (${t.transaksi} tx)`}
+                                    />
+                                    <span className="mt-1 text-[9px] text-gray-400">{t.bulan}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* Tabs */}
+                <div className="flex gap-1 rounded-xl bg-gray-100 p-1">
+                    {[
+                        { key: 'kendaraan', label: '🚗 Per Kendaraan' },
+                        { key: 'pegawai', label: '👤 Per Pegawai' },
+                        { key: 'bbm', label: '⛽ Per Jenis BBM' },
+                    ].map(tab => (
+                        <button key={tab.key}
+                            onClick={() => setActiveTab(tab.key)}
+                            className={`flex-1 rounded-lg px-3 py-2 text-sm font-medium transition ${
+                                activeTab === tab.key ? 'bg-white text-primary-dark shadow' : 'text-gray-500 hover:text-gray-700'
+                            }`}>
+                            {tab.label}
+                        </button>
+                    ))}
+                </div>
+
+                {/* Per Kendaraan */}
+                {activeTab === 'kendaraan' && (
+                    <>
+                        {/* Desktop Table */}
+                        <div className="hidden md:block overflow-hidden rounded-xl border border-gray-200 bg-white">
+                            <table className="min-w-full divide-y divide-gray-200 text-sm">
+                                <thead className="bg-gray-50 text-left text-xs font-medium uppercase text-gray-500">
+                                    <tr>
+                                        <th className="px-4 py-3">No</th>
+                                        <th className="px-4 py-3">Kendaraan</th>
+                                        <th className="px-4 py-3">Nopol</th>
+                                        <th className="px-4 py-3">Jenis</th>
+                                        <th className="px-4 py-3 text-center">Tx</th>
+                                        <th className="px-4 py-3 text-right">Liter</th>
+                                        <th className="px-4 py-3 text-right">Rata² Ltr</th>
+                                        <th className="px-4 py-3 text-center">Jarak</th>
+                                        <th className="px-4 py-3 text-center">KM/L</th>
+                                        <th className="px-4 py-3 text-right">Total Biaya</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-100">
+                                    {perKendaraan.length ? perKendaraan.map((k, i) => (
+                                        <tr key={i} className="hover:bg-gray-50">
+                                            <td className="px-4 py-3">{i + 1}</td>
+                                            <td className="px-4 py-3 font-medium text-gray-900">{k.merk_tipe}</td>
+                                            <td className="px-4 py-3 text-gray-600">{k.nomor_polisi}</td>
+                                            <td className="px-4 py-3 text-gray-600">{k.jenis_kendaraan}</td>
+                                            <td className="px-4 py-3 text-center">{k.jumlah_transaksi}</td>
+                                            <td className="px-4 py-3 text-right">{k.total_liter}</td>
+                                            <td className="px-4 py-3 text-right text-gray-500">{k.rata_rata_liter}</td>
+                                            <td className="px-4 py-3 text-center">{k.jarak_tempuh}</td>
+                                            <td className="px-4 py-3 text-center">{k.km_per_liter}</td>
+                                            <td className="px-4 py-3 text-right font-medium">{k.total_biaya}</td>
+                                        </tr>
+                                    )) : (
+                                        <tr><td colSpan="10" className="px-4 py-8 text-center text-gray-400">Tidak ada data</td></tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                        {/* Mobile Cards */}
+                        <div className="space-y-3 md:hidden">
+                            {perKendaraan.length ? perKendaraan.map((k, i) => (
+                                <div key={i} className="rounded-xl border border-gray-200 bg-white p-4">
+                                    <div className="mb-2 flex items-start justify-between">
+                                        <div>
+                                            <p className="font-semibold text-gray-900">{k.merk_tipe}</p>
+                                            <p className="text-sm text-gray-500">{k.nomor_polisi} · {k.jenis_kendaraan}</p>
+                                        </div>
+                                        <span className="rounded-full bg-primary-pale/50 px-2 py-0.5 text-xs font-medium text-primary-dark">{k.jumlah_transaksi} tx</span>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-2 text-sm">
+                                        <div><span className="text-gray-400">Liter:</span> <span className="font-medium">{k.total_liter}</span></div>
+                                        <div><span className="text-gray-400">Rata²:</span> <span className="font-medium">{k.rata_rata_liter} L</span></div>
+                                        <div><span className="text-gray-400">Jarak:</span> <span className="font-medium">{k.jarak_tempuh}</span></div>
+                                        <div><span className="text-gray-400">KM/L:</span> <span className="font-medium">{k.km_per_liter}</span></div>
+                                    </div>
+                                    <div className="mt-2 border-t border-gray-100 pt-2 text-right">
+                                        <span className="text-lg font-bold text-primary-dark">{k.total_biaya}</span>
+                                    </div>
+                                </div>
+                            )) : (
+                                <p className="py-8 text-center text-gray-400">Tidak ada data</p>
+                            )}
+                        </div>
+                    </>
+                )}
+
+                {/* Per Pegawai */}
+                {activeTab === 'pegawai' && (
+                    <>
+                        <div className="hidden md:block overflow-hidden rounded-xl border border-gray-200 bg-white">
+                            <table className="min-w-full divide-y divide-gray-200 text-sm">
+                                <thead className="bg-gray-50 text-left text-xs font-medium uppercase text-gray-500">
+                                    <tr>
+                                        <th className="px-4 py-3">No</th>
+                                        <th className="px-4 py-3">Nama</th>
+                                        <th className="px-4 py-3">NIP</th>
+                                        <th className="px-4 py-3">Jabatan</th>
+                                        <th className="px-4 py-3">Unit</th>
+                                        <th className="px-4 py-3 text-center">Tx</th>
+                                        <th className="px-4 py-3 text-right">Total Liter</th>
+                                        <th className="px-4 py-3 text-right">Total Biaya</th>
+                                        <th className="px-4 py-3 text-center">Kendaraan</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-100">
+                                    {perPegawai.length ? perPegawai.map((p, i) => (
+                                        <tr key={i} className="hover:bg-gray-50">
+                                            <td className="px-4 py-3">{i + 1}</td>
+                                            <td className="px-4 py-3 font-medium text-gray-900">{p.nama}</td>
+                                            <td className="px-4 py-3 text-gray-600">{p.nip}</td>
+                                            <td className="px-4 py-3 text-gray-600">{p.jabatan}</td>
+                                            <td className="px-4 py-3 text-gray-600">{p.unit}</td>
+                                            <td className="px-4 py-3 text-center">{p.jumlah_transaksi}</td>
+                                            <td className="px-4 py-3 text-right">{p.total_liter}</td>
+                                            <td className="px-4 py-3 text-right font-medium">{p.total_biaya}</td>
+                                            <td className="px-4 py-3 text-center">{p.kendaraan_digunakan}</td>
+                                        </tr>
+                                    )) : (
+                                        <tr><td colSpan="9" className="px-4 py-8 text-center text-gray-400">Tidak ada data</td></tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div className="space-y-3 md:hidden">
+                            {perPegawai.length ? perPegawai.map((p, i) => (
+                                <div key={i} className="rounded-xl border border-gray-200 bg-white p-4">
+                                    <div className="mb-2 flex items-start justify-between">
+                                        <div>
+                                            <p className="font-semibold text-gray-900">{p.nama}</p>
+                                            <p className="text-sm text-gray-500">{p.jabatan} · {p.unit}</p>
+                                        </div>
+                                        <span className="rounded-full bg-primary-pale/50 px-2 py-0.5 text-xs font-medium text-primary-dark">{p.jumlah_transaksi} tx</span>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-2 text-sm">
+                                        <div><span className="text-gray-400">NIP:</span> <span className="font-medium">{p.nip}</span></div>
+                                        <div><span className="text-gray-400">Liter:</span> <span className="font-medium">{p.total_liter}</span></div>
+                                        <div><span className="text-gray-400">Kendaraan:</span> <span className="font-medium">{p.kendaraan_digunakan}</span></div>
+                                    </div>
+                                    <div className="mt-2 border-t border-gray-100 pt-2 text-right">
+                                        <span className="text-lg font-bold text-primary-dark">{p.total_biaya}</span>
+                                    </div>
+                                </div>
+                            )) : (
+                                <p className="py-8 text-center text-gray-400">Tidak ada data</p>
+                            )}
+                        </div>
+                    </>
+                )}
+
+                {/* Per BBM */}
+                {activeTab === 'bbm' && (
+                    <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
+                        <table className="min-w-full divide-y divide-gray-200 text-sm">
+                            <thead className="bg-gray-50 text-left text-xs font-medium uppercase text-gray-500">
+                                <tr>
+                                    <th className="px-4 py-3">No</th>
+                                    <th className="px-4 py-3">Jenis BBM</th>
+                                    <th className="px-4 py-3 text-center">Transaksi</th>
+                                    <th className="px-4 py-3 text-right">Total Liter</th>
+                                    <th className="px-4 py-3 text-right">Total Nominal</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-100">
+                                {perBbm.length ? perBbm.map((b, i) => (
+                                    <tr key={i} className="hover:bg-gray-50">
+                                        <td className="px-4 py-3">{i + 1}</td>
+                                        <td className="px-4 py-3 font-medium text-gray-900">{b.jenis_bbm}</td>
+                                        <td className="px-4 py-3 text-center">{b.jumlah_transaksi}</td>
+                                        <td className="px-4 py-3 text-right">{b.total_liter}</td>
+                                        <td className="px-4 py-3 text-right font-medium">{b.total_nominal}</td>
+                                    </tr>
+                                )) : (
+                                    <tr><td colSpan="5" className="px-4 py-8 text-center text-gray-400">Tidak ada data</td></tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
             </div>
         </AppLayout>
     );

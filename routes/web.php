@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\KelompokAkunPembayaranController;
 use App\Http\Controllers\KendaraanController;
+use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\PrintSettingController;
 use App\Http\Controllers\ProfileController;
@@ -131,30 +132,8 @@ Route::middleware('auth')->group(function () use ($renderDashboard, $formatRupia
         Route::get('/riwayat/{transaksi}/spj-pdf', [TransaksiBbmController::class, 'downloadPdf'])->name('riwayat.spj-pdf');
         Route::get('/riwayat', [TransaksiBbmController::class, 'index'])->name('riwayat');
 
-        Route::get('/laporan', function () use ($formatRupiah) {
-            $transactions = TransaksiBbm::query()
-                ->with('kendaraan:id,merk_tipe')
-                ->get();
-
-            $rekap = $transactions
-                ->groupBy(fn (TransaksiBbm $transaction) => $transaction->kendaraan?->merk_tipe ?? 'Tanpa Kendaraan')
-                ->map(fn ($items, $kategori) => [
-                    'kategori' => $kategori,
-                    'liter' => rtrim(rtrim(number_format((float) $items->sum('liter'), 2, '.', ''), '0'), '.'),
-                    'nominal' => $formatRupiah((float) $items->sum('total')),
-                ])
-                ->values();
-
-            return Inertia::render('Bbm/Laporan', [
-                'summary' => [
-                    'periode' => 'Semua Data',
-                    'total_transaksi' => $transactions->count(),
-                    'total_liter' => rtrim(rtrim(number_format((float) $transactions->sum('liter'), 2, '.', ''), '0'), '.'),
-                    'total_nominal' => $formatRupiah((float) $transactions->sum('total')),
-                ],
-                'rekap' => $rekap,
-            ]);
-        })->name('laporan');
+        Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan');
+        Route::get('/laporan/pdf', [LaporanController::class, 'cetakPdf'])->name('laporan.pdf');
     });
 
     Route::prefix('settings')->name('settings.')->group(function () {
