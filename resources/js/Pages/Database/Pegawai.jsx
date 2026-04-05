@@ -8,6 +8,7 @@ export default function Pegawai({ pegawai }) {
     const [editingId, setEditingId] = useState(null);
     const [keyword, setKeyword] = useState('');
     const [showImport, setShowImport] = useState(false);
+    const [showForm, setShowForm] = useState(false);
     const form = useForm({
         nip: '',
         nama: '',
@@ -18,7 +19,6 @@ export default function Pegawai({ pegawai }) {
 
     const filteredPegawai = pegawai.filter((item) => {
         const query = keyword.toLowerCase();
-
         return (
             item.nama.toLowerCase().includes(query) ||
             (item.nip || '').toLowerCase().includes(query) ||
@@ -29,27 +29,21 @@ export default function Pegawai({ pegawai }) {
 
     const submit = (event) => {
         event.preventDefault();
-
+        const onSuccess = () => {
+            setEditingId(null);
+            form.reset();
+            setShowForm(false);
+        };
         if (editingId) {
-            form.put(route('database.pegawai.update', editingId), {
-                preserveScroll: true,
-                onSuccess: () => {
-                    setEditingId(null);
-                    form.reset();
-                },
-            });
-
-            return;
+            form.put(route('database.pegawai.update', editingId), { preserveScroll: true, onSuccess });
+        } else {
+            form.post(route('database.pegawai.store'), { preserveScroll: true, onSuccess });
         }
-
-        form.post(route('database.pegawai.store'), {
-            preserveScroll: true,
-            onSuccess: () => form.reset(),
-        });
     };
 
     const editPegawai = (item) => {
         setEditingId(item.id);
+        setShowForm(true);
         form.setData({
             nip: item.nip || '',
             nama: item.nama || '',
@@ -57,7 +51,6 @@ export default function Pegawai({ pegawai }) {
             unit: item.unit || '',
             keterangan: item.keterangan || '',
         });
-        // Scroll to form on mobile
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
@@ -65,279 +58,182 @@ export default function Pegawai({ pegawai }) {
         setEditingId(null);
         form.reset();
         form.clearErrors();
+        setShowForm(false);
     };
 
     const handleDelete = (item) => {
         if (confirm(`Hapus pegawai "${item.nama}"?`)) {
-            router.delete(route('database.pegawai.destroy', item.id), {
-                preserveScroll: true,
-            });
+            router.delete(route('database.pegawai.destroy', item.id), { preserveScroll: true });
         }
     };
 
     return (
         <AppLayout
             title="Database Pegawai"
-            description="Master data pegawai yang dipakai untuk pencatatan transaksi BBM dan kebutuhan SPJ."
+            description="Master data pegawai untuk pencatatan transaksi BBM dan SPJ."
             actions={
                 <>
                     <button
                         type="button"
-                        onClick={() => setShowImport((value) => !value)}
+                        onClick={() => setShowImport((v) => !v)}
                         className="rounded-2xl border border-gray-300 px-4 py-3 text-sm font-medium text-gray-700"
                     >
-                        {showImport ? 'Tutup Import' : 'Import Pegawai'}
+                        {showImport ? 'Tutup Import' : 'Import'}
                     </button>
                     <button
                         type="button"
-                        onClick={cancelEdit}
+                        onClick={() => { setShowForm((v) => !v); if (showForm) cancelEdit(); }}
                         className="rounded-2xl bg-primary px-4 py-3 text-sm font-medium text-white"
                     >
-                        Form Baru
+                        {showForm ? 'Tutup Form' : (editingId ? 'Edit' : '+ Pegawai')}
                     </button>
                 </>
             }
         >
             <Head title="Pegawai" />
 
-            <div className="mb-6 space-y-6">
-                {showImport ? (
+            <div className="space-y-6">
+                {showImport && (
                     <CsvImportCard
                         title="Import Data Pegawai"
-                        description="Gunakan file CSV dari data pegawai lama. Jika `nip` sudah ada, data akan diperbarui. Jika belum ada, sistem akan menambahkan baris baru."
+                        description="Gunakan file CSV. Jika NIP sudah ada, data diperbarui."
                         action={route('database.pegawai.import')}
                         templateUrl={route('database.pegawai.template')}
                         columns={['nip', 'nama', 'jabatan', 'unit', 'keterangan']}
                     />
-                ) : null}
+                )}
 
-                <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
-                    <form
-                        onSubmit={submit}
-                        className="rounded-xl border border-gray-200 bg-gray-50 p-5"
-                    >
-                        <div className="mb-5 flex items-center justify-between">
-                            <div>
-                                <p className="text-sm text-gray-500">
+                <div className="grid gap-6 lg:grid-cols-[360px_1fr]">
+                    {/* Form - collapsible on mobile */}
+                    {showForm && (
+                        <form
+                            onSubmit={submit}
+                            className="rounded-xl border border-gray-200 bg-gray-50 p-4 lg:p-5"
+                        >
+                            <div className="mb-4 flex items-center justify-between">
+                                <p className="text-sm font-semibold text-gray-900">
                                     {editingId ? 'Edit Pegawai' : 'Tambah Pegawai'}
                                 </p>
-                                <p className="mt-1 text-lg font-semibold text-gray-900">
-                                    Form master pegawai
-                                </p>
-                            </div>
-                            {editingId ? (
-                                <button
-                                    type="button"
-                                    onClick={cancelEdit}
-                                    className="rounded-2xl border border-gray-300 px-3 py-2 text-sm text-gray-700"
-                                >
-                                    Batal
+                                <button type="button" onClick={cancelEdit}
+                                    className="rounded-full p-1 text-gray-400 hover:text-gray-600">
+                                    ✕
                                 </button>
-                            ) : null}
-                        </div>
+                            </div>
 
-                        <div className="grid gap-4">
-                            <div>
-                                <input
-                                    className="w-full rounded-2xl border border-gray-300 px-4 py-3 text-sm"
-                                    placeholder="NIP"
-                                    value={form.data.nip}
-                                    onChange={(event) => form.setData('nip', event.target.value)}
-                                />
-                                <InputError className="mt-2" message={form.errors.nip} />
-                            </div>
-                            <div>
-                                <input
-                                    className="w-full rounded-2xl border border-gray-300 px-4 py-3 text-sm"
-                                    placeholder="Nama pegawai"
-                                    value={form.data.nama}
-                                    onChange={(event) => form.setData('nama', event.target.value)}
-                                />
-                                <InputError className="mt-2" message={form.errors.nama} />
-                            </div>
-                            <div>
-                                <input
-                                    className="w-full rounded-2xl border border-gray-300 px-4 py-3 text-sm"
-                                    placeholder="Jabatan"
-                                    value={form.data.jabatan}
-                                    onChange={(event) => form.setData('jabatan', event.target.value)}
-                                />
-                                <InputError className="mt-2" message={form.errors.jabatan} />
-                            </div>
-                            <div>
-                                <input
-                                    className="w-full rounded-2xl border border-gray-300 px-4 py-3 text-sm"
-                                    placeholder="Unit"
-                                    value={form.data.unit}
-                                    onChange={(event) => form.setData('unit', event.target.value)}
-                                />
-                                <InputError className="mt-2" message={form.errors.unit} />
-                            </div>
-                            <div>
-                                <textarea
-                                    rows="4"
-                                    className="w-full rounded-2xl border border-gray-300 px-4 py-3 text-sm"
-                                    placeholder="Keterangan"
-                                    value={form.data.keterangan}
-                                    onChange={(event) => form.setData('keterangan', event.target.value)}
-                                />
-                                <InputError className="mt-2" message={form.errors.keterangan} />
-                            </div>
-                        </div>
+                            <div className="space-y-3">
+                                <input className="w-full rounded-xl border border-gray-300 px-3 py-2.5 text-sm"
+                                    placeholder="NIP" value={form.data.nip}
+                                    onChange={(e) => form.setData('nip', e.target.value)} />
+                                <InputError message={form.errors.nip} />
 
-                        <button
-                            type="submit"
-                            disabled={form.processing}
-                            className="mt-5 rounded-2xl bg-primary px-4 py-3 text-sm font-medium text-white disabled:opacity-60"
-                        >
-                            {form.processing
-                                ? 'Menyimpan...'
-                                : editingId
-                                  ? 'Update Pegawai'
-                                  : 'Simpan Pegawai'}
-                        </button>
-                    </form>
+                                <input className="w-full rounded-xl border border-gray-300 px-3 py-2.5 text-sm"
+                                    placeholder="Nama pegawai" value={form.data.nama}
+                                    onChange={(e) => form.setData('nama', e.target.value)} />
+                                <InputError message={form.errors.nama} />
+
+                                <input className="w-full rounded-xl border border-gray-300 px-3 py-2.5 text-sm"
+                                    placeholder="Jabatan" value={form.data.jabatan}
+                                    onChange={(e) => form.setData('jabatan', e.target.value)} />
+                                <InputError message={form.errors.jabatan} />
+
+                                <input className="w-full rounded-xl border border-gray-300 px-3 py-2.5 text-sm"
+                                    placeholder="Unit" value={form.data.unit}
+                                    onChange={(e) => form.setData('unit', e.target.value)} />
+                                <InputError message={form.errors.unit} />
+
+                                <textarea rows="2"
+                                    className="w-full rounded-xl border border-gray-300 px-3 py-2.5 text-sm"
+                                    placeholder="Keterangan" value={form.data.keterangan}
+                                    onChange={(e) => form.setData('keterangan', e.target.value)} />
+                                <InputError message={form.errors.keterangan} />
+                            </div>
+
+                            <button type="submit" disabled={form.processing}
+                                className="mt-4 w-full rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-white disabled:opacity-60">
+                                {form.processing ? 'Menyimpan...' : editingId ? 'Update' : 'Simpan'}
+                            </button>
+                        </form>
+                    )}
 
                     <div>
-                        <div className="mb-4 grid gap-4 md:grid-cols-4">
-                            <div className="rounded-xl border border-gray-200 bg-gray-50 p-5">
-                                <p className="text-sm text-gray-500">Total Pegawai</p>
-                                <p className="mt-2 text-3xl font-semibold text-gray-900">
-                                    {pegawai.length}
-                                </p>
-                            </div>
-                            <div className="rounded-xl border border-gray-200 bg-gray-50 p-5 md:col-span-3">
-                                <input
-                                    className="w-full rounded-2xl border border-gray-300 px-4 py-3 text-sm"
-                                    placeholder="Cari nama, NIP, jabatan, atau unit"
-                                    value={keyword}
-                                    onChange={(event) => setKeyword(event.target.value)}
-                                />
-                            </div>
+                        {/* Search + count */}
+                        <div className="mb-4 flex items-center gap-3">
+                            <span className="shrink-0 rounded-full bg-primary-pale/50 px-3 py-1 text-xs font-semibold text-primary-dark">
+                                {pegawai.length} pegawai
+                            </span>
+                            <input
+                                className="w-full rounded-xl border border-gray-300 px-3 py-2.5 text-sm"
+                                placeholder="Cari nama, NIP, jabatan, unit..."
+                                value={keyword}
+                                onChange={(e) => setKeyword(e.target.value)}
+                            />
                         </div>
 
-                        {/* Mobile Card View */}
-                        <div className="grid gap-4 xl:hidden">
-                            {filteredPegawai.length ? (
-                                filteredPegawai.map((item) => (
-                                    <article
-                                        key={item.id}
-                                        className="rounded-xl border border-gray-200 bg-white p-5"
-                                    >
-                                        <div className="flex items-start justify-between gap-3">
-                                            <div className="min-w-0">
-                                                <h3 className="text-lg font-semibold text-gray-900 truncate">
-                                                    {item.nama}
-                                                </h3>
-                                                <p className="mt-1 text-sm text-gray-500">
-                                                    {item.nip || 'Non-PNS'}
-                                                </p>
-                                            </div>
-                                            {item.jabatan ? (
-                                                <span className="shrink-0 inline-block rounded-full bg-violet-50 px-3 py-1 text-xs font-medium text-violet-700 truncate max-w-[140px]">
-                                                    {item.jabatan}
-                                                </span>
-                                            ) : null}
+                        {/* Mobile Cards */}
+                        <div className="space-y-2 lg:hidden">
+                            {filteredPegawai.length ? filteredPegawai.map((item) => (
+                                <div key={item.id}
+                                    className="rounded-xl border border-gray-200 bg-white p-3">
+                                    <div className="flex items-start justify-between gap-2">
+                                        <div className="min-w-0">
+                                            <p className="font-semibold text-gray-900 truncate">{item.nama}</p>
+                                            <p className="text-xs text-gray-400">{item.nip || 'Non-PNS'}</p>
                                         </div>
-
-                                        <dl className="mt-4 grid gap-3 text-sm text-gray-600">
-                                            {item.unit ? (
-                                                <div>
-                                                    <dt className="text-gray-400">Unit</dt>
-                                                    <dd className="mt-1 font-medium text-gray-900">
-                                                        {item.unit}
-                                                    </dd>
-                                                </div>
-                                            ) : null}
-                                            {item.keterangan ? (
-                                                <div>
-                                                    <dt className="text-gray-400">Keterangan</dt>
-                                                    <dd className="mt-1 font-medium text-gray-900">
-                                                        {item.keterangan}
-                                                    </dd>
-                                                </div>
-                                            ) : null}
-                                        </dl>
-
-                                        <div className="mt-5 flex gap-2">
-                                            <button
-                                                type="button"
-                                                onClick={() => editPegawai(item)}
-                                                className="flex-1 rounded-2xl border border-gray-300 px-4 py-3 text-center text-sm font-medium text-gray-700"
-                                            >
-                                                Edit
-                                            </button>
-                                            <button
-                                                type="button"
-                                                onClick={() => handleDelete(item)}
-                                                className="rounded-2xl border border-rose-200 px-4 py-3 text-sm font-medium text-rose-700"
-                                            >
-                                                Hapus
-                                            </button>
-                                        </div>
-                                    </article>
-                                ))
-                            ) : (
-                                <div className="rounded-xl border border-dashed border-gray-300 bg-gray-50 p-8 text-center text-sm text-gray-500">
-                                    Belum ada data pegawai.
+                                        {item.jabatan && (
+                                            <span className="shrink-0 rounded-full bg-violet-50 px-2 py-0.5 text-[10px] font-medium text-violet-700 truncate max-w-[100px]">
+                                                {item.jabatan}
+                                            </span>
+                                        )}
+                                    </div>
+                                    {item.unit && (
+                                        <p className="mt-1 text-xs text-gray-500">{item.unit}</p>
+                                    )}
+                                    <div className="mt-2 flex gap-2">
+                                        <button type="button" onClick={() => editPegawai(item)}
+                                            className="flex-1 rounded-lg border border-gray-200 py-1.5 text-xs font-medium text-gray-700">
+                                            Edit
+                                        </button>
+                                        <button type="button" onClick={() => handleDelete(item)}
+                                            className="rounded-lg border border-rose-200 px-3 py-1.5 text-xs font-medium text-rose-600">
+                                            Hapus
+                                        </button>
+                                    </div>
                                 </div>
+                            )) : (
+                                <p className="py-6 text-center text-sm text-gray-400">Belum ada data.</p>
                             )}
                         </div>
 
-                        {/* Desktop Table View */}
-                        <div className="hidden overflow-hidden rounded-xl border border-gray-200 bg-white xl:block">
-                            <table className="min-w-full divide-y divide-stone-200 text-sm">
-                                <thead className="bg-gray-50 text-left text-gray-500">
+                        {/* Desktop Table */}
+                        <div className="hidden overflow-hidden rounded-xl border border-gray-200 bg-white lg:block">
+                            <table className="min-w-full divide-y divide-gray-200 text-sm">
+                                <thead className="bg-gray-50 text-left text-xs font-medium uppercase text-gray-500">
                                     <tr>
-                                        <th className="px-5 py-4 font-medium">NIP</th>
-                                        <th className="px-5 py-4 font-medium">Nama</th>
-                                        <th className="px-5 py-4 font-medium">Jabatan</th>
-                                        <th className="px-5 py-4 font-medium">Unit</th>
-                                        <th className="px-5 py-4 font-medium">Aksi</th>
+                                        <th className="px-4 py-3">NIP</th>
+                                        <th className="px-4 py-3">Nama</th>
+                                        <th className="px-4 py-3">Jabatan</th>
+                                        <th className="px-4 py-3">Unit</th>
+                                        <th className="px-4 py-3">Aksi</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-stone-100">
-                                    {filteredPegawai.length ? (
-                                        filteredPegawai.map((item) => (
-                                            <tr key={item.id}>
-                                                <td className="px-5 py-4 text-gray-600">
-                                                    {item.nip || '-'}
-                                                </td>
-                                                <td className="px-5 py-4 font-medium text-gray-900">
-                                                    {item.nama}
-                                                </td>
-                                                <td className="px-5 py-4 text-gray-600">
-                                                    {item.jabatan || '-'}
-                                                </td>
-                                                <td className="px-5 py-4 text-gray-600">
-                                                    {item.unit || '-'}
-                                                </td>
-                                                <td className="px-5 py-4">
-                                                    <div className="flex gap-2">
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => editPegawai(item)}
-                                                            className="rounded-xl border border-gray-300 px-3 py-2 text-xs text-gray-700"
-                                                        >
-                                                            Edit
-                                                        </button>
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => handleDelete(item)}
-                                                            className="rounded-xl border border-rose-200 px-3 py-2 text-xs text-rose-700"
-                                                        >
-                                                            Hapus
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        ))
-                                    ) : (
-                                        <tr>
-                                            <td colSpan="5" className="px-5 py-8 text-center text-gray-500">
-                                                Belum ada data pegawai.
+                                <tbody className="divide-y divide-gray-100">
+                                    {filteredPegawai.length ? filteredPegawai.map((item) => (
+                                        <tr key={item.id} className="hover:bg-gray-50">
+                                            <td className="px-4 py-3 text-gray-600">{item.nip || '-'}</td>
+                                            <td className="px-4 py-3 font-medium text-gray-900">{item.nama}</td>
+                                            <td className="px-4 py-3 text-gray-600">{item.jabatan || '-'}</td>
+                                            <td className="px-4 py-3 text-gray-600">{item.unit || '-'}</td>
+                                            <td className="px-4 py-3">
+                                                <div className="flex gap-2">
+                                                    <button type="button" onClick={() => editPegawai(item)}
+                                                        className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs text-gray-700">Edit</button>
+                                                    <button type="button" onClick={() => handleDelete(item)}
+                                                        className="rounded-lg border border-rose-200 px-3 py-1.5 text-xs text-rose-600">Hapus</button>
+                                                </div>
                                             </td>
                                         </tr>
+                                    )) : (
+                                        <tr><td colSpan="5" className="px-4 py-8 text-center text-gray-400">Belum ada data.</td></tr>
                                     )}
                                 </tbody>
                             </table>
