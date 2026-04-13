@@ -26,9 +26,9 @@ export const navigationSections = [
                 routeName: 'database.alat',
             },
             {
-                title: 'Properti',
-                href: '/database/properti',
-                routeName: 'database.properti.index',
+                title: 'Peminjaman Alat',
+                href: '/database/peminjaman-alat',
+                routeName: 'database.peminjaman-alat',
             },
         ],
     },
@@ -42,7 +42,7 @@ export const navigationSections = [
                 routeName: 'bbm.kelompok-akun-pembayaran',
             },
             {
-                title: 'Pencatatan',
+                title: 'Pencatatan BBM',
                 href: '/bbm/pencatatan',
                 routeName: 'bbm.pencatatan',
             },
@@ -55,17 +55,6 @@ export const navigationSections = [
                 title: 'Laporan',
                 href: '/bbm/laporan',
                 routeName: 'bbm.laporan',
-            },
-        ],
-    },
-    {
-        key: 'peminjaman',
-        title: 'Peminjaman',
-        items: [
-            {
-                title: 'Peminjaman Alat',
-                href: '/peminjaman-alat',
-                routeName: 'peminjaman-alat.index',
             },
         ],
     },

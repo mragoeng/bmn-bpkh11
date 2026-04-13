@@ -33,7 +33,8 @@ class PropertiController extends Controller
             })
             ->orderBy('jenis_properti')
             ->orderBy('nama_barang')
-            ->get();
+            ->paginate(24)
+            ->withQueryString();
 
         return Inertia::render('Database/Properti', [
             'properti' => $properti,

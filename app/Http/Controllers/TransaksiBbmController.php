@@ -57,7 +57,26 @@ class TransaksiBbmController extends Controller
 
     public function store(TransaksiBbmRequest $request)
     {
-        TransaksiBbm::query()->create($this->validatedTransactionData($request));
+        $base = $this->validatedTransactionData($request);
+
+        if ($request->has('struks') && is_array($request->input('struks'))) {
+            $count = 0;
+            foreach ($request->input('struks') as $struk) {
+                TransaksiBbm::query()->create(array_merge($base, [
+                    'liter' => $struk['liter'],
+                    'harga_per_liter' => $struk['harga_per_liter'],
+                    'total' => isset($struk['total']) && $struk['total'] !== '' && $struk['total'] !== null
+                        ? (float) $struk['total']
+                        : (float) $struk['liter'] * (float) $struk['harga_per_liter'],
+                    'spbu' => $struk['spbu'] ?? null,
+                    'nomor_nota' => $struk['nomor_nota'] ?? null,
+                ]));
+                $count++;
+            }
+            return to_route('bbm.riwayat')->with('success', "{$count} transaksi BBM berhasil disimpan.");
+        }
+
+        TransaksiBbm::query()->create($base);
 
         return to_route('bbm.riwayat')->with('success', 'Transaksi BBM berhasil disimpan.');
     }
@@ -229,6 +248,7 @@ class TransaksiBbmController extends Controller
                 'jenis_bbm' => $transaksi->jenis_bbm,
                 'liter' => $transaksi->liter,
                 'harga_per_liter' => $transaksi->harga_per_liter,
+                'total' => $transaksi->total,
                 'spbu' => $transaksi->spbu,
                 'nomor_nota' => $transaksi->nomor_nota,
                 'catatan' => $transaksi->catatan,
@@ -249,7 +269,16 @@ class TransaksiBbmController extends Controller
                 ->value('id');
         }
 
-        $validated['total'] = (float) $validated['liter'] * (float) $validated['harga_per_liter'];
+        // Multi-struk: return base data only, struks handled separately in store()
+        if (isset($validated['struks'])) {
+            unset($validated['struks'], $validated['liter'], $validated['harga_per_liter'], $validated['total'], $validated['spbu'], $validated['nomor_nota']);
+            return $validated;
+        }
+
+        $calculatedTotal = (float) $validated['liter'] * (float) $validated['harga_per_liter'];
+        $validated['total'] = isset($validated['total']) && $validated['total'] !== '' && $validated['total'] !== null
+            ? (float) $validated['total']
+            : $calculatedTotal;
 
         return $validated;
     }

@@ -121,8 +121,8 @@ export default function Kendaraan({ kendaraan, pegawaiOptions }) {
     };
 
     const kondisiBadge = (kondisi) => {
-        const colors = { 'Baik': 'bg-green-50 text-green-700', 'Rusak Ringan': 'bg-yellow-50 text-yellow-700', 'Rusak Berat': 'bg-red-50 text-red-700' };
-        return <span className={'inline-block rounded-full px-2 py-0.5 text-xs font-medium ' + (colors[kondisi] || 'bg-gray-50 text-gray-700')}>{kondisi || '-'}</span>;
+        const colors = { 'Baik': 'bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300', 'Rusak Ringan': 'bg-yellow-50 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300', 'Rusak Berat': 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300' };
+        return <span className={'inline-block rounded-full px-2 py-0.5 text-xs font-medium ' + (colors[kondisi] || 'bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-200')}>{kondisi || '-'}</span>;
     };
 
     return (
@@ -175,7 +175,7 @@ export default function Kendaraan({ kendaraan, pegawaiOptions }) {
                             <div className="p-6">
                                 <div className="flex items-center justify-between mb-4">
                                     <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{detailItem.merk_tipe}</h2>
-                                    <button onClick={() => setDetailId(null)} className="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+                                    <button onClick={() => setDetailId(null)} className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 text-2xl">&times;</button>
                                 </div>
                                 {detailItem.foto_url && (
                                     <div className="mb-4 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700">
@@ -220,7 +220,7 @@ export default function Kendaraan({ kendaraan, pegawaiOptions }) {
                             <div className="p-4">
                                 <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100 truncate">{item.merk_tipe}</h3>
                                 <p className="mt-1 text-lg font-bold text-primary">{item.nomor_polisi}</p>
-                                <div className="mt-2 flex flex-wrap gap-2 text-xs">{item.tahun && <span className="text-gray-500">{item.tahun}</span>}{kondisiBadge(item.kondisi)}</div>
+                                <div className="mt-2 flex flex-wrap gap-2 text-xs">{item.tahun && <span className="text-gray-500 dark:text-gray-400">{item.tahun}</span>}{kondisiBadge(item.kondisi)}</div>
                                 {item.nama_barang && <p className="mt-1 text-xs text-gray-400 truncate">{item.nama_barang}</p>}
                                 {item.nilai_perolehan && <p className="mt-2 text-xs font-medium text-emerald-600">{formatRupiah(item.nilai_perolehan)}</p>}
                             </div>

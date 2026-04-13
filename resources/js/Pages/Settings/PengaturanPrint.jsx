@@ -141,7 +141,7 @@ export default function PengaturanPrint({ template, googleDocsSetup }) {
                                     </span>
                                     <textarea
                                         rows="12"
-                                        className="w-full rounded-2xl border border-gray-300 px-4 py-3 text-sm leading-6"
+                                        className="w-full rounded-2xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 px-4 py-3 text-sm leading-6"
                                         placeholder="Isi template SPJ jika tidak menggunakan Google Docs."
                                         value={form.data.template_content}
                                         onChange={(event) =>
@@ -289,7 +289,7 @@ export default function PengaturanPrint({ template, googleDocsSetup }) {
                         </div>
                     </div>
 
-                    <div className="rounded-xl border border-gray-200 bg-primary p-6 text-stone-100">
+                    <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-primary p-6 text-stone-100">
                         <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">
                             Alur Baru
                         </p>

@@ -4,30 +4,42 @@
     <meta charset="utf-8">
     <title>Laporan BBM - {{ $periode_label }}</title>
     <style>
+        @page { size: A4 portrait; margin: 0; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'DejaVu Sans', sans-serif; font-size: 10pt; color: #333; }
-        .header { text-align: center; border-bottom: 3px double #333; padding-bottom: 10px; margin-bottom: 15px; }
-        .header h1 { font-size: 14pt; margin-bottom: 4px; }
-        .header p { font-size: 10pt; color: #555; }
-        .summary { display: flex; justify-content: space-between; margin-bottom: 15px; }
-        .summary-box { flex: 1; text-align: center; padding: 8px; margin: 0 4px; background: #f5f5f5; border-radius: 4px; }
-        .summary-box .label { font-size: 8pt; color: #777; text-transform: uppercase; }
-        .summary-box .value { font-size: 12pt; font-weight: bold; margin-top: 4px; }
-        .section-title { font-size: 11pt; font-weight: bold; margin: 15px 0 8px 0; padding-bottom: 4px; border-bottom: 1px solid #ccc; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 9pt; }
-        th { background: #2c3e50; color: #fff; padding: 6px 8px; text-align: left; font-weight: bold; }
-        td { padding: 5px 8px; border-bottom: 1px solid #eee; }
+        body {
+            font-family: 'DejaVu Sans', sans-serif;
+            font-size: 9pt;
+            color: #222;
+            line-height: 1.4;
+            padding: 20mm 18mm 20mm 25mm;
+        }
+
+        .header { text-align: center; border-bottom: 3px double #333; padding-bottom: 10px; margin-bottom: 14px; }
+        .header h1 { font-size: 13pt; margin-bottom: 3px; letter-spacing: 1px; }
+        .header p { font-size: 9pt; color: #555; }
+
+        .summary { display: flex; justify-content: space-between; margin-bottom: 14px; }
+        .summary-box { flex: 1; text-align: center; padding: 8px 6px; margin: 0 3px; background: #f5f5f5; border: 1px solid #ddd; border-radius: 4px; }
+        .summary-box .label { font-size: 7pt; color: #777; text-transform: uppercase; letter-spacing: 0.5px; }
+        .summary-box .value { font-size: 11pt; font-weight: bold; margin-top: 3px; }
+
+        .section-title { font-size: 10pt; font-weight: bold; margin: 14px 0 6px 0; padding-bottom: 3px; border-bottom: 1px solid #bbb; }
+
+        table { width: 100%; border-collapse: collapse; margin-bottom: 8px; font-size: 8pt; }
+        th { background: #2c3e50; color: #fff; padding: 5px 6px; text-align: left; font-weight: bold; font-size: 7.5pt; }
+        td { padding: 4px 6px; border-bottom: 1px solid #ddd; }
         tr:nth-child(even) { background: #f9f9f9; }
+
         .text-right { text-align: right; }
         .text-center { text-align: center; }
-        .footer { margin-top: 20px; text-align: right; font-size: 9pt; color: #777; }
-        @page { margin: 15mm; }
+
+        .footer { margin-top: 18px; padding-top: 8px; border-top: 1px solid #ccc; text-align: right; font-size: 8pt; color: #777; }
     </style>
 </head>
 <body>
     <div class="header">
         <h1>LAPORAN PEMAKAIAN BBM</h1>
-        <p>BPKH XI</p>
+        <p>BPKH WILAYAH XI</p>
         <p style="margin-top:4px; font-weight:bold;">Periode: {{ $periode_label }}</p>
     </div>
 
@@ -38,7 +50,7 @@
         </div>
         <div class="summary-box">
             <div class="label">Total Liter</div>
-            <div class="value">{{ $summary['total_liter'] }} L</div>
+            <div class="value">{{ $summary['total_liter'] }}</div>
         </div>
         <div class="summary-box">
             <div class="label">Total Nominal</div>
@@ -55,8 +67,8 @@
                 <th>Nopol</th>
                 <th>Jenis</th>
                 <th class="text-center">Transaksi</th>
-                <th class="text-right">Total Liter</th>
-                <th class="text-right">Rata² Liter</th>
+                <th class="text-right">Liter</th>
+                <th class="text-right">Rata²</th>
                 <th class="text-center">Jarak</th>
                 <th class="text-center">KM/L</th>
                 <th class="text-right">Total Biaya</th>
@@ -72,8 +84,8 @@
                 <td class="text-center">{{ $k['jumlah_transaksi'] }}</td>
                 <td class="text-right">{{ $k['total_liter'] }}</td>
                 <td class="text-right">{{ $k['rata_rata_liter'] }}</td>
-                <td class="text-center">{{ $k['jarak_tempuh'] }}</td>
-                <td class="text-center">{{ $k['km_per_liter'] }}</td>
+                <td class="text-center">{{ $k['jarak_tempuh'] ?? '-' }}</td>
+                <td class="text-center">{{ $k['km_per_liter'] ?? '-' }}</td>
                 <td class="text-right">{{ $k['total_biaya'] }}</td>
             </tr>
             @endforeach

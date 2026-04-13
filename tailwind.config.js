@@ -29,6 +29,15 @@ export default {
                     dark: '#92770E',
                 },
             },
+            minHeight: {
+                'touch': '44px',
+            },
+            minWidth: {
+                'touch': '44px',
+            },
+            spacing: {
+                '18': '4.5rem',
+            },
         },
     },
 

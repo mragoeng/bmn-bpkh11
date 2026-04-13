@@ -30,7 +30,7 @@ export default function Pagination({ data, routeName }) {
 
     return (
         <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-between">
-            <p className="text-xs text-stone-500 sm:text-sm">
+            <p className="text-xs text-stone-500 dark:text-gray-400 sm:text-sm">
                 {from}–{to} dari {total}
             </p>
             <div className="flex items-center gap-1">
@@ -38,7 +38,7 @@ export default function Pagination({ data, routeName }) {
                     type="button"
                     onClick={() => goToPage(currentPage - 1)}
                     disabled={currentPage <= 1}
-                    className="rounded-lg border border-stone-300 px-2 py-1.5 text-xs text-stone-700 disabled:opacity-40 sm:rounded-xl sm:px-3 sm:py-2 sm:text-sm"
+                    className="rounded-lg border border-stone-300 dark:border-gray-600 px-2 py-1.5 text-xs text-stone-700 dark:text-gray-300 disabled:opacity-40 sm:rounded-xl sm:px-3 sm:py-2 sm:text-sm"
                 >
                     ←
                 </button>
@@ -50,7 +50,7 @@ export default function Pagination({ data, routeName }) {
                         className={`rounded-lg px-2 py-1.5 text-xs font-medium sm:rounded-xl sm:px-3 sm:py-2 sm:text-sm ${
                             page === currentPage
                                 ? 'bg-amber-400 text-stone-950'
-                                : 'border border-stone-300 text-stone-700'
+                                : 'border border-stone-300 dark:border-gray-600 text-stone-700 dark:text-gray-300'
                         }`}
                     >
                         {page}
@@ -60,7 +60,7 @@ export default function Pagination({ data, routeName }) {
                     type="button"
                     onClick={() => goToPage(currentPage + 1)}
                     disabled={currentPage >= lastPage}
-                    className="rounded-lg border border-stone-300 px-2 py-1.5 text-xs text-stone-700 disabled:opacity-40 sm:rounded-xl sm:px-3 sm:py-2 sm:text-sm"
+                    className="rounded-lg border border-stone-300 dark:border-gray-600 px-2 py-1.5 text-xs text-stone-700 dark:text-gray-300 disabled:opacity-40 sm:rounded-xl sm:px-3 sm:py-2 sm:text-sm"
                 >
                     →
                 </button>

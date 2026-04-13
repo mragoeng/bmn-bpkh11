@@ -34,7 +34,8 @@ class AlatController extends Controller
                 $query->where('status', $status);
             })
             ->latest()
-            ->get();
+            ->paginate(24)
+            ->withQueryString();
 
         return Inertia::render('Database/Alat', [
             'alat' => $alat,

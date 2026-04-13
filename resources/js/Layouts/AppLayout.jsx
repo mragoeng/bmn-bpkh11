@@ -1,4 +1,4 @@
-import { Link, usePage } from '@inertiajs/react';
+import { Link, usePage, router } from '@inertiajs/react';
 import { useEffect, useMemo, useState } from 'react';
 import { navigationSections } from '@/lib/navigation';
 import DarkModeToggle from '@/Components/DarkModeToggle';
@@ -14,7 +14,7 @@ function Chevron({ open }) {
 function NavigationItem({ item, isActive, onNavigate }) {
     return (
         <Link href={item.href} onClick={onNavigate}
-            className={`block rounded-lg px-4 py-2.5 text-sm transition ${
+            className={`block rounded-lg px-4 py-3 text-sm transition min-h-[44px] flex items-center ${
                 isActive ? 'bg-white/20 text-white font-semibold' : 'text-white/80 hover:bg-white/10 hover:text-white'
             }`}>
             {item.title}
@@ -28,7 +28,7 @@ function NavigationSection({ section, url, openSections, toggleSection, onNaviga
     return (
         <div>
             <button type="button" onClick={() => toggleSection(section.key)}
-                className={`mb-2 flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-xs font-semibold uppercase tracking-[0.2em] transition ${
+                className={`mb-2 flex w-full items-center justify-between rounded-lg px-3 py-3 text-left text-xs font-semibold uppercase tracking-[0.2em] transition min-h-[44px] ${
                     hasActiveItem ? 'text-accent' : 'text-white/50 hover:text-white/70'
                 }`}>
                 <span>{section.title}</span>
@@ -47,10 +47,50 @@ function NavigationSection({ section, url, openSections, toggleSection, onNaviga
 
 export default function AppLayout({ title, description, actions, children }) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [logo, setLogo] = useState(null);
+    const [deferredPrompt, setDeferredPrompt] = useState(null);
+    const [showInstallPrompt, setShowInstallPrompt] = useState(false);
     const { url, props } = usePage();
     const flashMessage = props.flash?.success;
     const flashError = props.flash?.error;
     const user = props.auth?.user;
+
+    // Fetch logo on mount
+    useEffect(() => {
+        fetch('/api/logo')
+            .then(res => res.json())
+            .then(data => setLogo(data.logo))
+            .catch(() => setLogo(null));
+    }, []);
+
+    // Update favicon dynamically
+    useEffect(() => {
+        if (logo) {
+            const link = document.querySelector('link[rel="icon"]') || document.createElement('link');
+            link.rel = 'icon';
+            link.href = logo;
+            document.head.appendChild(link);
+        }
+    }, [logo]);
+
+    // PWA Install prompt
+    useEffect(() => {
+        const handleBeforeInstallPrompt = (e) => {
+            e.preventDefault();
+            setDeferredPrompt(e);
+            setTimeout(() => setShowInstallPrompt(true), 3000);
+        };
+        window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+        return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    }, []);
+
+    const handleInstall = async () => {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        setDeferredPrompt(null);
+        setShowInstallPrompt(false);
+    };
 
     const initialSections = useMemo(() =>
         Object.fromEntries(navigationSections.map((section) => [
@@ -70,14 +110,34 @@ export default function AppLayout({ title, description, actions, children }) {
 
     return (
         <div className="min-h-screen bg-[#F5F5F0] dark:bg-gray-900 text-gray-900">
+            {/* Install Prompt Banner */}
+            {showInstallPrompt && deferredPrompt && (
+                <div className="fixed bottom-28 left-4 right-4 z-[100] md:bottom-4 md:left-auto md:right-4 md:max-w-sm">
+                    <div className="rounded-lg border border-primary bg-white dark:bg-gray-800 p-4 shadow-lg">
+                        <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">Pasang aplikasi BMN di layar utama?</p>
+                        <div className="flex gap-2">
+                            <button onClick={handleInstall} className="flex-1 rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-white min-h-[44px]">
+                                Pasang
+                            </button>
+                            <button onClick={() => setShowInstallPrompt(false)} className="rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-3 text-sm text-gray-700 dark:text-gray-300 min-h-[44px]">
+                                Nanti
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {sidebarOpen ? (
                 <>
                     <button type="button" aria-label="Tutup menu" onClick={() => setSidebarOpen(false)} className="fixed inset-0 z-40 bg-black/40 xl:hidden"/>
                     <div className="fixed inset-y-0 left-0 right-0 z-50 flex flex-col bg-primary p-5 xl:hidden">
                         <div className="mb-6 flex items-center justify-between">
-                            <div>
-                                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-accent">BMN-BPKH11</p>
-                                <p className="mt-2 text-sm text-white/70">Menu aplikasi</p>
+                            <div className="flex items-center gap-3">
+                                {logo && <img src={logo} alt="Logo" className="h-8 w-8 object-contain rounded" />}
+                                <div>
+                                    <p className="text-xs font-semibold uppercase tracking-[0.3em] text-accent">BMN-BPKH11</p>
+                                    <p className="mt-1 text-sm text-white/70">Menu aplikasi</p>
+                                </div>
                             </div>
                             <button type="button" onClick={() => setSidebarOpen(false)} className="rounded-lg border border-white/30 px-4 py-2 text-sm font-medium text-white">Tutup</button>
                         </div>
@@ -88,6 +148,7 @@ export default function AppLayout({ title, description, actions, children }) {
                                 </div>
                             ))}
                         </nav>
+                        <button onClick={() => router.post("/logout")} className="mt-4 flex w-full items-center gap-2 rounded-2xl border border-white/20 px-4 py-3 text-sm text-white/70 hover:bg-white/10 hover:text-white transition min-h-[44px]">🔓 Logout</button>
                     </div>
                 </>
             ) : null}
@@ -95,25 +156,30 @@ export default function AppLayout({ title, description, actions, children }) {
             <div className="flex min-h-screen w-full">
                 <aside className="hidden w-64 shrink-0 xl:block">
                     <div className="sticky top-0 flex h-screen flex-col overflow-y-auto bg-primary p-5">
-                        <div className="mb-8">
-                            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-accent">BMN-BPKH11</p>
-                            <h1 className="mt-3 text-xl font-bold text-white">Arsip Pencatatan BBM</h1>
-                            <p className="mt-3 text-sm leading-6 text-white/70">Kendaraan, transaksi BBM, laporan, dan template SPJ dalam satu aplikasi internal.</p>
+                        <div className="mb-8 flex items-center gap-3">
+                            {logo && <img src={logo} alt="Logo" className="h-10 w-10 object-contain rounded" />}
+                            <div>
+                                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-accent">BMN-BPKH11</p>
+                            </div>
                         </div>
-                        <nav className="flex-1 space-y-4">
+                        
+                        <nav className="flex-1 space-y-4 mt-4">
                             {navigationSections.map((section) => (
                                 <NavigationSection key={section.key} section={section} url={url} openSections={openSections} toggleSection={toggleSection}/>
                             ))}
                         </nav>
+                        <button onClick={() => router.post("/logout")} className="mt-4 flex w-full items-center gap-2 rounded-2xl border border-white/20 px-4 py-3 text-sm text-white/70 hover:bg-white/10 hover:text-white transition min-h-[44px]">🔓 Logout</button>
                         <div className="mt-4 border-t border-white/20 pt-4 text-xs text-white/40">{footerText}</div>
                     </div>
                 </aside>
 
                 <div className="flex-1">
                     <div className="sticky top-0 z-30 flex items-center justify-between bg-primary px-4 py-3 xl:hidden">
-                        <div>
-                            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-accent">BMN-BPKH11</p>
-                            <p className="mt-1 text-sm text-white/80">Arsip Pencatatan BBM</p>
+                        <div className="flex items-center gap-3">
+                            {logo && <img src={logo} alt="Logo" className="h-7 w-7 object-contain rounded" />}
+                            <div>
+                                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-accent">BMN-BPKH11</p>
+                            </div>
                         </div>
                         <DarkModeToggle />
                         <button type="button" onClick={() => setSidebarOpen(true)} className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-primary">Menu</button>
@@ -125,22 +191,22 @@ export default function AppLayout({ title, description, actions, children }) {
                                 <div>
                                     <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">Aplikasi Internal</p>
                                     <h2 className="mt-2 text-2xl font-bold text-gray-900 dark:text-gray-100">{title}</h2>
-                                    {description ? <p className="mt-2 max-w-3xl text-sm leading-6 text-gray-500 dark:text-gray-400">{description}</p> : null}
+                                    {description && <p className="mt-2 max-w-3xl text-sm leading-6 text-gray-500 dark:text-gray-400">{description}</p>}
                                 </div>
                                 <div className="flex flex-col items-start gap-3 lg:items-end">
-                                    {user ? (
+                                    {user && (
                                         <div className="w-full rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 px-4 py-3 text-sm text-gray-600 dark:text-gray-300 lg:w-auto">
                                             Login sebagai <span className="font-semibold text-gray-900 dark:text-gray-100">{user.name}</span> ({user.username})
                                         </div>
-                                    ) : null}
+                                    )}
                                     <DarkModeToggle />
-                                    {actions ? <div className="flex w-full shrink-0 flex-col gap-3 sm:flex-row sm:flex-wrap lg:w-auto lg:justify-end">{actions}</div> : null}
+                                    {actions && <div className="flex w-full shrink-0 flex-col gap-3 sm:flex-row sm:flex-wrap lg:w-auto lg:justify-end">{actions}</div>}
                                 </div>
                             </div>
                             <div className="pt-6">{children}</div>
-                            {flashMessage ? <div className="mt-6 rounded-lg border border-primary-pale dark:border-green-700 bg-primary-pale/30 dark:bg-green-900/30 px-4 py-3 text-sm text-primary-dark dark:text-green-300">{flashMessage}</div> : null}
-                            {flashError ? <div className="mt-6 rounded-lg border border-red-200 dark:border-red-700 bg-red-50 dark:bg-red-900/30 px-4 py-3 text-sm text-red-800 dark:text-red-300">{flashError}</div> : null}
-                            <div className="mt-8 border-t border-gray-200 dark:border-gray-700 pt-5 text-center text-sm text-gray-400 dark:text-gray-600">{footerText}</div>
+                            {flashMessage && <div className="mt-6 rounded-lg border border-primary-pale dark:border-green-700 bg-primary-pale/30 dark:bg-green-900/30 px-4 py-3 text-sm text-primary-dark dark:text-green-300">{flashMessage}</div>}
+                            {flashError && <div className="mt-6 rounded-lg border border-red-200 dark:border-red-700 bg-red-50 dark:bg-red-900/30 px-4 py-3 text-sm text-red-800 dark:text-red-300">{flashError}</div>}
+                            <div className="mt-6 border-t border-gray-200 dark:border-gray-700 pt-5 text-center text-sm text-gray-400 dark:text-gray-600">{footerText}</div>
                         </div>
                     </main>
                 </div>

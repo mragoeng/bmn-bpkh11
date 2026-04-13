@@ -176,7 +176,7 @@ export default function Riwayat({ transactions }) {
                                     </a>
                                     <Link
                                         href={item.edit_url}
-                                        className="rounded-2xl border border-gray-300 px-4 py-3 text-center text-sm font-medium text-gray-700"
+                                        className="rounded-2xl border border-gray-300 dark:border-gray-600 px-4 py-3 text-center text-sm font-medium text-gray-700 dark:text-gray-200"
                                     >
                                         Edit
                                     </Link>

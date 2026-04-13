@@ -199,7 +199,7 @@ export default function Laporan({ summary, perKendaraan, perPegawai, perBbm, tre
                                 <div key={i} className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
                                     <div className="mb-2 flex items-start justify-between">
                                         <div>
-                                            <p className="font-semibold text-gray-900">{k.merk_tipe}</p>
+                                            <p className="font-semibold text-gray-900 dark:text-gray-100">{k.merk_tipe}</p>
                                             <p className="text-sm text-gray-500 dark:text-gray-400">{k.nomor_polisi} · {k.jenis_kendaraan}</p>
                                         </div>
                                         <span className="rounded-full bg-primary-pale/50 px-2 py-0.5 text-xs font-medium text-primary-dark">{k.jumlah_transaksi} tx</span>
@@ -263,7 +263,7 @@ export default function Laporan({ summary, perKendaraan, perPegawai, perBbm, tre
                                 <div key={i} className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
                                     <div className="mb-2 flex items-start justify-between">
                                         <div>
-                                            <p className="font-semibold text-gray-900">{p.nama}</p>
+                                            <p className="font-semibold text-gray-900 dark:text-gray-100">{p.nama}</p>
                                             <p className="text-sm text-gray-500 dark:text-gray-400">{p.jabatan} · {p.unit}</p>
                                         </div>
                                         <span className="rounded-full bg-primary-pale/50 px-2 py-0.5 text-xs font-medium text-primary-dark">{p.jumlah_transaksi} tx</span>

@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AlatController;
+use App\Http\Controllers\PeminjamanKendaraanController;
+use App\Http\Controllers\ServisKendaraanController;
 use App\Http\Controllers\KelompokAkunPembayaranController;
 use App\Http\Controllers\KendaraanController;
 use App\Http\Controllers\LaporanController;
@@ -8,6 +10,7 @@ use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\PeminjamanAlatController;
 use App\Http\Controllers\PropertiController;
 use App\Http\Controllers\PrintSettingController;
+use App\Http\Controllers\LogoSettingController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SettingsUserController;
 use App\Http\Controllers\TransaksiBbmController;
@@ -22,73 +25,137 @@ use Inertia\Inertia;
 
 $formatRupiah = fn (float|int $value): string => 'Rp '.number_format($value, 0, ',', '.');
 
+// New renderDashboard closure - replace the old one in routes/web.php
+// This goes in routes/web.php replacing the $renderDashboard variable
+
 $renderDashboard = function () use ($formatRupiah) {
     if (! Schema::hasTable('transaksi_bbm')) {
         return Inertia::render('Dashboard', [
-            'stats' => [
-                [
-                    'label' => 'Pegawai',
-                    'value' => 0,
-                    'description' => 'Data master pegawai terdaftar',
-                ],
-                [
-                    'label' => 'Kendaraan',
-                    'value' => 0,
-                    'description' => 'Roda 2 dan roda 4 aktif',
-                ],
-                [
-                    'label' => 'Transaksi BBM',
-                    'value' => 0,
-                    'description' => 'Arsip transaksi BBM tercatat',
-                ],
-                [
-                    'label' => 'Total Nominal',
-                    'value' => $formatRupiah(0),
-                    'description' => 'Akumulasi pengeluaran BBM',
-                ],
-            ],
+            'stats' => [],
             'latestTransactions' => [],
+            'bbmMonthly' => [],
+            'topKendaraanBbm' => [],
+            'peminjamanAktif' => [],
+            'perluPerhatian' => [],
         ]);
     }
 
-    $transactions = TransaksiBbm::query()
-        ->with(['pegawai:id,nama', 'kendaraan:id,merk_tipe,nomor_polisi'])
-        ->latest('tanggal')
-        ->latest('id')
+    // === ROW 1: Quick Stats ===
+    $totalKendaraan = Kendaraan::count();
+    $kendaraanBaik = Kendaraan::where('kondisi', 'like', '%Baik%')->count();
+    $kendaraanRusak = Kendaraan::where('kondisi', 'like', '%Rusak%')->count();
+    $totalPegawai = Pegawai::count();
+    $totalAlat = \DB::table('alat')->count();
+    $totalProperti = \DB::table('properti')->count();
+
+    $stats = [
+        ['key' => 'kendaraan', 'label' => 'Kendaraan', 'value' => $totalKendaraan, 'icon' => '🚗', 'color' => 'blue',
+         'detail' => "{$kendaraanBaik} Baik, {$kendaraanRusak} Rusak"],
+        ['key' => 'pegawai', 'label' => 'Pegawai', 'value' => $totalPegawai, 'icon' => '👥', 'color' => 'green', 'detail' => 'Pegawai terdaftar'],
+        ['key' => 'alat', 'label' => 'Alat Ukur', 'value' => $totalAlat, 'icon' => '🔧', 'color' => 'purple', 'detail' => 'Alat tercatat'],
+        ['key' => 'properti', 'label' => 'Properti', 'value' => $totalProperti, 'icon' => '🏢', 'color' => 'amber', 'detail' => 'Aset properti'],
+    ];
+
+    // === ROW 2: BBM Stats ===
+    $now = now();
+    $bbmBulanIni = TransaksiBbm::whereYear('tanggal', $now->year)->whereMonth('tanggal', $now->month);
+    $bbmBulanLalu = TransaksiBbm::whereYear('tanggal', $now->copy()->subMonth()->year)
+        ->whereMonth('tanggal', $now->copy()->subMonth()->month);
+
+    $bbmIniLiter = (float) $bbmBulanIni->sum('liter');
+    $bbmIniBiaya = (float) $bbmBulanIni->sum('total');
+    $bbmIniCount = $bbmBulanIni->count();
+
+    $bbmLaluBiaya = (float) $bbmBulanLalu->sum('total');
+    $bbmSelisih = $bbmLaluBiaya > 0 ? round((($bbmIniBiaya - $bbmLaluBiaya) / $bbmLaluBiaya) * 100, 1) : 0;
+
+    $bbmStats = [
+        'liter' => rtrim(rtrim(number_format($bbmIniLiter, 2, '.', ''), '0'), '.'),
+        'biaya' => $formatRupiah($bbmIniBiaya),
+        'transaksi' => $bbmIniCount,
+        'selisih_persen' => $bbmSelisih,
+        'naik' => $bbmSelisih >= 0,
+    ];
+
+    $peminjamanKendaraanAktif = \DB::table('peminjaman_kendaraan')->where('status', 'DISETUJUI')->count();
+    $peminjamanKendaraanMenunggu = \DB::table('peminjaman_kendaraan')->where('status', 'MENUNGGU')->count();
+    $peminjamanAlatAktif = \DB::table('peminjaman_alat')->where('status', 'dipinjam')->count();
+
+    $peminjamanStats = [
+        'kendaraan_aktif' => $peminjamanKendaraanAktif,
+        'kendaraan_menunggu' => $peminjamanKendaraanMenunggu,
+        'alat_aktif' => $peminjamanAlatAktif,
+    ];
+
+    // === ROW 3: Charts ===
+    // BBM 6 bulan terakhir
+    $bbmMonthly = [];
+    for ($i = 5; $i >= 0; $i--) {
+        $m = $now->copy()->subMonths($i);
+        $data = TransaksiBbm::whereYear('tanggal', $m->year)->whereMonth('tanggal', $m->month)
+            ->selectRaw('COALESCE(SUM(liter),0) as liter, COALESCE(SUM(total),0) as total')
+            ->first();
+        $bbmMonthly[] = [
+            'bulan' => $m->translatedFormat('M'),
+            'liter' => (float) $data->liter,
+            'total' => (float) $data->total,
+        ];
+    }
+
+    // Top 5 kendaraan BBM bulan ini
+    $topKendaraanBbm = TransaksiBbm::whereYear('tanggal', $now->year)->whereMonth('tanggal', $now->month)
+        ->select('kendaraan_id', \DB::raw('SUM(liter) as total_liter'), \DB::raw('SUM(total) as total_biaya'))
+        ->with('kendaraan:id,merk_tipe,nomor_polisi')
+        ->groupBy('kendaraan_id')
+        ->orderByDesc('total_liter')
         ->limit(5)
-        ->get();
+        ->get()
+        ->map(fn($t) => [
+            'kendaraan' => ($t->kendaraan?->merk_tipe ?? '-') . ' (' . ($t->kendaraan?->nomor_polisi ?? '-') . ')',
+            'liter' => (float) $t->total_liter,
+            'biaya' => $formatRupiah((float) $t->total_biaya),
+        ]);
+
+    // === ROW 5: Activities ===
+    $latestTransactions = TransaksiBbm::query()
+        ->with(['pegawai:id,nama', 'kendaraan:id,merk_tipe,nomor_polisi'])
+        ->latest('tanggal')->latest('id')->limit(5)->get()
+        ->map(fn($t) => [
+            'tanggal' => $t->tanggal,
+            'pegawai' => $t->pegawai?->nama ?? '-',
+            'kendaraan' => $t->kendaraan?->merk_tipe ?? '-',
+            'nomor_polisi' => $t->kendaraan?->nomor_polisi ?? '-',
+            'liter' => rtrim(rtrim(number_format((float) $t->liter, 2, '.', ''), '0'), '.'),
+            'total' => $formatRupiah((float) $t->total),
+        ]);
+
+    $latestPeminjaman = \DB::table('peminjaman_kendaraan')
+        ->join('kendaraan', 'peminjaman_kendaraan.kendaraan_id', '=', 'kendaraan.id')
+        ->join('pegawai', 'peminjaman_kendaraan.pegawai_id', '=', 'pegawai.id')
+        ->select('peminjaman_kendaraan.*', 'kendaraan.merk_tipe', 'kendaraan.nomor_polisi', 'pegawai.nama as pegawai_nama')
+        ->orderByDesc('peminjaman_kendaraan.created_at')->limit(5)->get()
+        ->map(fn($p) => [
+            'tanggal' => $p->tanggal_pinjam,
+            'pegawai' => $p->pegawai_nama,
+            'kendaraan' => $p->merk_tipe . ' (' . $p->nomor_polisi . ')',
+            'status' => $p->status,
+            'keperluan' => $p->keperluan,
+        ]);
+
+    // Perlu perhatian
+    $perluPerhatian = Kendaraan::where('kondisi', 'not like', '%Baik%')
+        ->get(['id', 'nama_barang', 'merk_tipe', 'nomor_polisi', 'kondisi'])
+        ->map(fn($k) => ['nama' => $k->nama_barang, 'merk' => $k->merk_tipe, 'nopol' => $k->nomor_polisi, 'kondisi' => $k->kondisi]);
 
     return Inertia::render('Dashboard', [
-        'stats' => [
-            [
-                'label' => 'Pegawai',
-                'value' => Pegawai::count(),
-                'description' => 'Data master pegawai terdaftar',
-            ],
-            [
-                'label' => 'Kendaraan',
-                'value' => Kendaraan::count(),
-                'description' => 'Roda 2 dan roda 4 aktif',
-            ],
-            [
-                'label' => 'Transaksi BBM',
-                'value' => TransaksiBbm::count(),
-                'description' => 'Arsip transaksi BBM tercatat',
-            ],
-            [
-                'label' => 'Total Nominal',
-                'value' => $formatRupiah((float) TransaksiBbm::sum('total')),
-                'description' => 'Akumulasi pengeluaran BBM',
-            ],
-        ],
-        'latestTransactions' => $transactions->map(fn (TransaksiBbm $transaction) => [
-            'tanggal' => $transaction->tanggal,
-            'pegawai' => $transaction->pegawai?->nama ?? '-',
-            'kendaraan' => $transaction->kendaraan?->merk_tipe ?? '-',
-            'nomor_polisi' => $transaction->kendaraan?->nomor_polisi ?? '-',
-            'liter' => rtrim(rtrim(number_format((float) $transaction->liter, 2, '.', ''), '0'), '.'),
-            'total' => $formatRupiah((float) $transaction->total),
-        ]),
+        'stats' => $stats,
+        'bbmStats' => $bbmStats,
+        'peminjamanStats' => $peminjamanStats,
+        'bbmMonthly' => $bbmMonthly,
+        'topKendaraanBbm' => $topKendaraanBbm,
+        'latestTransactions' => $latestTransactions,
+        'latestPeminjaman' => $latestPeminjaman,
+        'perluPerhatian' => $perluPerhatian,
     ]);
 };
 
@@ -144,6 +211,22 @@ Route::middleware('auth')->group(function () use ($renderDashboard, $formatRupia
 
         Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan');
         Route::get('/laporan/pdf', [LaporanController::class, 'cetakPdf'])->name('laporan.pdf');
+
+        // Servis Kendaraan
+        Route::get('servis-kendaraan/laporan', [ServisKendaraanController::class, 'laporan'])->name('bbm.servis-kendaraan.laporan');
+        Route::get('servis-kendaraan/laporan/pdf', [ServisKendaraanController::class, 'laporanPdf'])->name('bbm.servis-kendaraan.laporan.pdf');
+        Route::get('servis-kendaraan/export', [ServisKendaraanController::class, 'exportExcel'])->name('bbm.servis-kendaraan.export');
+        Route::resource('servis-kendaraan', ServisKendaraanController::class)->except(['create', 'show', 'edit']);
+        Route::post('servis-kendaraan/{servis_kendaraan}/upload-bukti', [ServisKendaraanController::class, 'uploadBukti'])->name('bbm.servis-kendaraan.upload-bukti');
+        Route::delete('servis-kendaraan/{servis_kendaraan}/delete-bukti', [ServisKendaraanController::class, 'deleteBukti'])->name('bbm.servis-kendaraan.delete-bukti');
+        // Peminjaman Kendaraan
+        Route::resource('peminjaman-kendaraan', PeminjamanKendaraanController::class)->except(['create', 'show', 'edit']);
+        Route::put('peminjaman-kendaraan/{peminjaman_kendaraan}/approve', [PeminjamanKendaraanController::class, 'approve'])->name('peminjaman-kendaraan.approve');
+        Route::put('peminjaman-kendaraan/{peminjaman_kendaraan}/reject', [PeminjamanKendaraanController::class, 'reject'])->name('peminjaman-kendaraan.reject');
+        Route::put('peminjaman-kendaraan/{peminjaman_kendaraan}/return', [PeminjamanKendaraanController::class, 'returnKendaraan'])->name('peminjaman-kendaraan.return');
+        Route::get('peminjaman-kendaraan/{peminjaman_kendaraan}/pdf', [PeminjamanKendaraanController::class, 'generatePdf'])->name('peminjaman-kendaraan.pdf');
+        Route::post('peminjaman-kendaraan/{peminjaman_kendaraan}/upload-pdf', [PeminjamanKendaraanController::class, 'uploadPdf'])->name('peminjaman-kendaraan.upload-pdf');
+
         Route::get('/laporan/excel', [LaporanController::class, 'exportExcel'])->name('laporan.excel');
     });
 
@@ -156,6 +239,9 @@ Route::middleware('auth')->group(function () use ($renderDashboard, $formatRupia
         Route::get('/pengaturan-print', [PrintSettingController::class, 'edit'])->name('pengaturan-print');
         Route::post('/pengaturan-print', [PrintSettingController::class, 'update'])->middleware('throttle:web')->name('pengaturan-print.update');
         Route::post('/pengaturan-print/test-google-docs', [PrintSettingController::class, 'testConnection'])->middleware('throttle:web')->name('pengaturan-print.test-google-docs');
+
+        Route::get('/pengaturan-logo', [LogoSettingController::class, 'edit'])->name('pengaturan-logo');
+        Route::post('/pengaturan-logo', [LogoSettingController::class, 'update'])->middleware('throttle:web')->name('pengaturan-logo.update');
     });
 });
 
